@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "anyioutils"
+version = "0.0.0"
+authors = [
+  {name = "David Brochart", email = "david.brochart@gmail.com"},
+]
+description = "Utility classes for AnyIO"
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+keywords = ["asyncio", "trio"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+dependencies = [
+  "anyio",
+  "trio",
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+test = [
+  "coverage",
+  "mypy",
+  "pytest",
+  "ruff",
+]
+
+[project.urls]
+Repository = "https://github.com/davidbrochart/anyioutils.git"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+extend-select = [
+  "E501",
+  "UP",
+  "D",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
