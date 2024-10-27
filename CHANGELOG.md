@@ -1,5 +1,9 @@
 # Version history
 
+## 0.3.0
+
+- Fix `Task`.
+
 ## 0.2.0
 
 - Add `Task` and `create_task`.
