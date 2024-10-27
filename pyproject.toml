@@ -8,7 +8,7 @@ version = "0.1.0"
 authors = [
   {name = "David Brochart", email = "david.brochart@gmail.com"},
 ]
-description = "Utility classes for AnyIO"
+description = "Utility classes and functions for AnyIO"
 readme = "README.md"
 license = {file = "LICENSE.txt"}
 keywords = ["asyncio", "trio"]
@@ -28,6 +28,7 @@ test = [
   "mypy",
   "pytest",
   "ruff",
+  "exceptiongroup;python_version<'3.11'"
 ]
 
 [project.urls]

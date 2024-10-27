@@ -5,19 +5,12 @@ from typing import Any, Callable
 from anyio import Event, create_task_group
 from anyio.abc import TaskGroup
 
-
-class CancelledError(Exception):
-    pass
-
-
-class InvalidStateError(Exception):
-    pass
+from ._exceptions import CancelledError, InvalidStateError
 
 
 class Future:
     _done_callbacks: list[Callable[[Future], None]]
     _exception: BaseException | None
-    _task_group: TaskGroup
 
     def __init__(self) -> None:
         self._result_event = Event()
@@ -31,17 +24,17 @@ class Future:
         for callback in self._done_callbacks:
             callback(self)
 
-    async def _wait_result(self) -> None:
+    async def _wait_result(self, task_group: TaskGroup) -> None:
         await self._result_event.wait()
-        self._task_group.cancel_scope.cancel()
+        task_group.cancel_scope.cancel()
 
-    async def _wait_exception(self) -> None:
+    async def _wait_exception(self, task_group: TaskGroup) -> None:
         await self._exception_event.wait()
-        self._task_group.cancel_scope.cancel()
+        task_group.cancel_scope.cancel()
 
-    async def _wait_cancelled(self) -> None:
+    async def _wait_cancelled(self, task_group: TaskGroup) -> None:
         await self._cancelled_event.wait()
-        self._task_group.cancel_scope.cancel()
+        task_group.cancel_scope.cancel()
 
     def cancel(self) -> None:
         self._done = True
@@ -60,10 +53,10 @@ class Future:
         if self._cancelled_event.is_set():
             raise CancelledError
 
-        async with create_task_group() as self._task_group:
-            self._task_group.start_soon(self._wait_result)
-            self._task_group.start_soon(self._wait_exception)
-            self._task_group.start_soon(self._wait_cancelled)
+        async with create_task_group() as tg:
+            tg.start_soon(self._wait_result, tg)
+            tg.start_soon(self._wait_exception, tg)
+            tg.start_soon(self._wait_cancelled, tg)
 
         if self._result_event.is_set():
             return self._result
@@ -72,7 +65,9 @@ class Future:
             raise self._exception
         if self._cancelled_event.is_set():
             raise CancelledError
-        raise RuntimeError("Future has no result, no exception, and was not cancelled")  # pragma: no cover
+        raise RuntimeError(  # pragma: no cover
+            "Future has no result, no exception, and was not cancelled"
+        )
 
     def done(self) -> bool:
         return self._done
