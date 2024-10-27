@@ -1,0 +1,57 @@
+name: test
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    name: ${{ matrix.os }} python-${{ matrix.python-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos, windows]
+        rust-version: [stable]
+        python-version:
+          - '3.9'
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - '3.13'
+          - 'pypy3.9'
+          - 'pypy3.10'
+
+    runs-on: ${{ matrix.os }}-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
+
+    - name: Build and install anyioutils
+      run: pip install -e ".[test]"
+
+    - name: Check types
+      run: mypy src
+
+    - name: Run tests
+      run: pytest --color=yes -v tests
+
+    - name: Run code coverage
+      if: ${{ (matrix.python-version == '3.13') && (matrix.os == 'ubuntu') }}
+      run: |
+        coverage run -m pytest tests
+        coverage report --show-missing --fail-under=100
