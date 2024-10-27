@@ -22,7 +22,10 @@ class Future:
 
     def _call_callbacks(self) -> None:
         for callback in self._done_callbacks:
-            callback(self)
+            try:
+                callback(self)
+            except BaseException:
+                pass
 
     async def _wait_result(self, task_group: TaskGroup) -> None:
         await self._result_event.wait()

@@ -6,7 +6,7 @@ Utility classes and functions for AnyIO.
 
 `task = anyioutils.create_task(my_async_func())` behaves the same as `task = asyncio.create_task(my_async_func())` except that:
 - the `task` still has to be launched in the background with an existing task group `tg`, using `tg.start_soon(task.wait)`,
-- and/or the `task` can be awaited with `result = task.wait()`.
+- and/or the `task` can be awaited with `result = await task.wait()`.
 
 ```py
 from anyioutils import CancelledError, create_task
@@ -39,7 +39,7 @@ run(main)
 ## Future
 
 `anyioutils.Future` behaves the same as `asyncio.Future` except that:
-- you cannot directly await an `anyioutils.Future` object, but through its `.wait()` method (unlike an `asyncio.Future`, but like an `asyncio.Event`).
+- you cannot directly await an `anyioutils.Future` object, but through its `.wait()` method (unlike an `asyncio.Future`, but like an `asyncio.Event`),
 - cancelling an `anyioutils.Future` doesn't raise an `anyio.get_cancelled_exc_class()`, but an `anyioutils.CancelledError`.
 
 ```py

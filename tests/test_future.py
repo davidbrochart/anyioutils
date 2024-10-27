@@ -68,9 +68,9 @@ async def test_callback():
     future0 = Future()
     callback0_called = False
 
-    def callback0(f):
+    def callback0(future):
         nonlocal callback0_called
-        assert f == future0
+        assert future == future0
         callback0_called = True
 
     future0.add_done_callback(callback0)
@@ -80,12 +80,20 @@ async def test_callback():
     future1 = Future()
     callback1_called = False
 
-    def callback1(f):
+    def callback1(future):
         nonlocal callback1_called
-        assert f == future1  # pragma: no cover
+        assert future == future1  # pragma: no cover
         callback1_called = True  # pragma: no cover
 
     future1.add_done_callback(callback1)
     future1.remove_done_callback(callback1)
     future1.set_result(1)
     assert not callback1_called
+
+    future2 = Future()
+
+    def callback2(future):
+        raise RuntimeError
+
+    future2.add_done_callback(callback2)
+    future2.set_result(1)
