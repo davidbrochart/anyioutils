@@ -110,5 +110,7 @@ class Task:
         return count
 
 
-def create_task(coro: Coroutine[Any, Any, Any]) -> Task:
-    return Task(coro)
+def create_task(coro: Coroutine[Any, Any, Any], task_group: TaskGroup) -> Task:
+    task = Task(coro)
+    task_group.start_soon(task.wait)
+    return task

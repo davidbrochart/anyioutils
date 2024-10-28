@@ -1,7 +1,7 @@
 from sys import version_info
 
 import pytest
-from anyioutils import CancelledError, InvalidStateError, create_task
+from anyioutils import CancelledError, InvalidStateError, Task, create_task
 from anyio import Event, create_task_group, sleep
 
 if version_info < (3, 11):
@@ -18,7 +18,7 @@ async def test_task_result1():
         return 1
 
     async with create_task_group() as tg:
-        task = create_task(foo())
+        task = Task(foo())
         with pytest.raises(InvalidStateError):
             task.result()
         tg.start_soon(task.wait)
@@ -32,8 +32,7 @@ async def test_task_result2():
         return 1
 
     async with create_task_group() as tg:
-        task = create_task(foo())
-        tg.start_soon(task.wait)
+        task = create_task(foo(), tg)
         assert await task.wait() == 1
 
 
@@ -41,7 +40,7 @@ async def test_exception():
     async def foo():
         raise RuntimeError
 
-    task = create_task(foo())
+    task = Task(foo())
     with pytest.raises(InvalidStateError):
         task.exception()
 
@@ -64,8 +63,7 @@ async def test_task_cancelled1():
 
     with pytest.raises(BaseExceptionGroup) as excinfo:
         async with create_task_group() as tg:
-            task = create_task(bar())
-            tg.start_soon(task.wait)
+            task = create_task(bar(), tg)
             await event.wait()
             task.cancel()
             assert task.cancelled()
@@ -87,8 +85,7 @@ async def test_task_cancelled2():
 
     with pytest.raises(BaseExceptionGroup) as excinfo:
         async with create_task_group() as tg:
-            task = create_task(bar())
-            tg.start_soon(task.wait)
+            task = create_task(bar(), tg)
             await event.wait()
             task.cancel()
             await task.wait()
@@ -99,7 +96,7 @@ async def test_callback():
     async def foo():
         pass
 
-    task0 = create_task(foo())
+    task0 = Task(foo())
     callback0_called = False
 
     def callback0(task):
@@ -111,7 +108,7 @@ async def test_callback():
     await task0.wait()
     assert callback0_called
 
-    task1 = create_task(foo())
+    task1 = Task(foo())
     callback1_called = False
 
     def callback1(task):
@@ -124,7 +121,7 @@ async def test_callback():
     await task1.wait()
     assert not callback1_called
 
-    task2 = create_task(foo())
+    task2 = Task(foo())
 
     def callback2(f):
         raise RuntimeError
