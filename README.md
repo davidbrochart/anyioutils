@@ -4,12 +4,12 @@ Utility classes and functions for AnyIO.
 
 ## Task
 
-`task = anyioutils.create_task(my_async_func())` behaves the same as `task = asyncio.create_task(my_async_func())` except that:
-- the `task` still has to be launched in the background with an existing task group `tg`, using `tg.start_soon(task.wait)`,
-- and/or the `task` can be awaited with `result = await task.wait()`.
+`task = anyioutils.create_task(my_async_func(), task_group)` behaves the same as `task = asyncio.create_task(my_async_func())` except that an existing `task_group` has to be passed for the task to be launched in the background.
+
+You can also use `task = anyioutils.Task(my_async_func())` and then launch the `task` with `task_group.start_soon(task.wait)`, and/or await it with `result = await task.wait()`.
 
 ```py
-from anyioutils import CancelledError, create_task
+from anyioutils import CancelledError, Task, create_task
 from anyio import create_task_group, run, sleep
 
 async def foo():
@@ -20,16 +20,15 @@ async def bar():
 
 async def main():
     async with create_task_group() as tg:
-        task = create_task(foo())
+        task = Task(foo())
         assert await task.wait() == 1
 
     try:
         async with create_task_group() as tg:
-            task = create_task(bar())
-            tg.start_soon(task.wait)
+            task = create_task(bar(), tg)
             await sleep(0.1)
             task.cancel()
-    except ExceptionGroup as exc_group:
+    except BaseExceptionGroup as exc_group:
         assert len(exc_group.exceptions) == 1
         assert type(exc_group.exceptions[0]) == CancelledError
 
