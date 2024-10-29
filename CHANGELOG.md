@@ -1,5 +1,9 @@
 # Version history
 
+## 0.4.1
+
+- Add `task.cancel(raise_exception=False)`.
+
 ## 0.4.0
 
 - Launch task in `create_task()`, passing an external task group.
