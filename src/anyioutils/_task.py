@@ -18,6 +18,7 @@ class Task:
         self._has_result = False
         self._has_exception = False
         self._cancelled_event = Event()
+        self._raise_cancelled_error = True
         self._done_callbacks = []
         self._done = False
         self._exception = None
@@ -48,9 +49,10 @@ class Task:
         await self._cancelled_event.wait()
         task_group.cancel_scope.cancel()
 
-    def cancel(self):
+    def cancel(self, raise_exception: bool = True):
         self._done = True
         self._cancelled_event.set()
+        self._raise_cancelled_error = raise_exception
         self._call_callbacks()
 
     def cancelled(self) -> bool:
@@ -60,7 +62,9 @@ class Task:
         if self._has_result:
             return self._result
         if self._cancelled_event.is_set():
-            raise CancelledError
+            if self._raise_cancelled_error:
+                raise CancelledError
+            return
         if self._has_exception:
             assert self._exception is not None
             raise self._exception
@@ -72,7 +76,9 @@ class Task:
         if self._has_result:
             return self._result
         if self._cancelled_event.is_set():
-            raise CancelledError
+            if self._raise_cancelled_error:
+                raise CancelledError
+            return
         if self._has_exception:
             assert self._exception is not None
             raise self._exception

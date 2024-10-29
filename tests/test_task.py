@@ -69,8 +69,7 @@ async def test_task_cancelled1():
             assert task.cancelled()
             with pytest.raises(CancelledError):
                 task.exception()
-    assert len(excinfo.value.exceptions) == 1
-    assert type(excinfo.value.exceptions[0]) == CancelledError
+    assert excinfo.group_contains(CancelledError)
 
     with pytest.raises(CancelledError):
         task.result()
@@ -89,7 +88,21 @@ async def test_task_cancelled2():
             await event.wait()
             task.cancel()
             await task.wait()
-    assert type(excinfo.value.exceptions[0]) == CancelledError
+    assert excinfo.group_contains(CancelledError)
+
+
+async def test_task_cancelled3():
+    event = Event()
+
+    async def bar():
+        event.set()
+        await sleep(float("inf"))
+
+    async with create_task_group() as tg:
+        task = create_task(bar(), tg)
+        await event.wait()
+        task.cancel(raise_exception=False)
+        assert await task.wait() is None
 
 
 async def test_callback():
