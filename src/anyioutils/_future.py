@@ -17,8 +17,9 @@ class Future:
         self._exception_event = Event()
         self._cancelled_event = Event()
         self._done_callbacks = []
-        self._done = False
+        self._done_event = Event()
         self._exception = None
+        self._waiting = False
 
     def _call_callbacks(self) -> None:
         for callback in self._done_callbacks:
@@ -40,7 +41,7 @@ class Future:
         task_group.cancel_scope.cancel()
 
     def cancel(self) -> None:
-        self._done = True
+        self._done_event.set()
         self._cancelled_event.set()
         self._call_callbacks()
 
@@ -48,6 +49,9 @@ class Future:
         return self._cancelled_event.is_set()
 
     async def wait(self) -> Any:
+        if self._waiting:
+            await self._done_event.wait()
+        self._waiting = True
         if self._result_event.is_set():
             return self._result
         if self._exception_event.is_set():
@@ -73,12 +77,12 @@ class Future:
         )
 
     def done(self) -> bool:
-        return self._done
+        return self._done_event.is_set()
 
     def set_result(self, value: Any) -> None:
-        if self._done:
+        if self._done_event.is_set():
             raise InvalidStateError
-        self._done = True
+        self._done_event.set()
         self._result = value
         self._result_event.set()
         self._call_callbacks()
@@ -94,15 +98,15 @@ class Future:
         raise InvalidStateError
 
     def set_exception(self, value: BaseException) -> None:
-        if self._done:
+        if self._done_event.is_set():
             raise InvalidStateError
-        self._done = True
+        self._done_event.set()
         self._exception = value
         self._exception_event.set()
         self._call_callbacks()
 
     def exception(self) -> BaseException | None:
-        if not self._done:
+        if not self._done_event.is_set():
             raise InvalidStateError
         if self._cancelled_event.is_set():
             raise CancelledError
