@@ -1,5 +1,9 @@
 # Version history
 
+## 0.4.3
+
+- Fix future being awaited multiple times.
+
 ## 0.4.2
 
 - Fix task being awaited multiple times.
