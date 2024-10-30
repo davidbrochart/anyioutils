@@ -20,8 +20,9 @@ class Task:
         self._cancelled_event = Event()
         self._raise_cancelled_error = True
         self._done_callbacks = []
-        self._done = False
+        self._done_event = Event()
         self._exception = None
+        self._waiting = False
 
     def _call_callbacks(self) -> None:
         for callback in self._done_callbacks:
@@ -31,17 +32,13 @@ class Task:
                 pass
 
     async def _wait_result(self, task_group: TaskGroup) -> None:
-        if self._done:
-            task_group.cancel_scope.cancel()
-            return
-
         try:
             self._result = await self._coro
             self._has_result = True
         except BaseException as exc:
             self._exception = exc
             self._has_exception = True
-        self._done = True
+        self._done_event.set()
         task_group.cancel_scope.cancel()
         self._call_callbacks()
 
@@ -50,7 +47,7 @@ class Task:
         task_group.cancel_scope.cancel()
 
     def cancel(self, raise_exception: bool = True):
-        self._done = True
+        self._done_event.set()
         self._cancelled_event.set()
         self._raise_cancelled_error = raise_exception
         self._call_callbacks()
@@ -59,6 +56,9 @@ class Task:
         return self._cancelled_event.is_set()
 
     async def wait(self) -> Any:
+        if self._waiting:
+            await self._done_event.wait()
+        self._waiting = True
         if self._has_result:
             return self._result
         if self._cancelled_event.is_set():
@@ -87,7 +87,7 @@ class Task:
         )
 
     def done(self) -> bool:
-        return self._done
+        return self._done_event.is_set()
 
     def result(self) -> Any:
         if self._cancelled_event.is_set():
@@ -100,7 +100,7 @@ class Task:
         raise InvalidStateError
 
     def exception(self) -> BaseException | None:
-        if not self._done:
+        if not self._done_event.is_set():
             raise InvalidStateError
         if self._cancelled_event.is_set():
             raise CancelledError
