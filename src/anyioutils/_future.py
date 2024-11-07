@@ -16,6 +16,7 @@ class Future:
         self._result_event = Event()
         self._exception_event = Event()
         self._cancelled_event = Event()
+        self._raise_cancelled_error = True
         self._done_callbacks = []
         self._done_event = Event()
         self._exception = None
@@ -40,9 +41,10 @@ class Future:
         await self._cancelled_event.wait()
         task_group.cancel_scope.cancel()
 
-    def cancel(self) -> None:
+    def cancel(self, raise_exception: bool = True) -> None:
         self._done_event.set()
         self._cancelled_event.set()
+        self._raise_cancelled_error = raise_exception
         self._call_callbacks()
 
     def cancelled(self) -> bool:
@@ -58,7 +60,8 @@ class Future:
             assert self._exception is not None
             raise self._exception
         if self._cancelled_event.is_set():
-            raise CancelledError
+            if self._raise_cancelled_error:
+                raise CancelledError
 
         async with create_task_group() as tg:
             tg.start_soon(self._wait_result, tg)
@@ -71,7 +74,8 @@ class Future:
             assert self._exception is not None
             raise self._exception
         if self._cancelled_event.is_set():
-            raise CancelledError
+            if self._raise_cancelled_error:
+                raise CancelledError
         raise RuntimeError(  # pragma: no cover
             "Future has no result, no exception, and was not cancelled"
         )
