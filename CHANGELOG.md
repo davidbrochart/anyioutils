@@ -1,5 +1,9 @@
 # Version history
 
+## 0.4.4
+
+- Add `future.cancel(raise_exception=False)`.
+
 ## 0.4.3
 
 - Fix future being awaited multiple times.

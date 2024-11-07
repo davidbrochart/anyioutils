@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "anyioutils"
-version = "0.4.3"
+version = "0.4.4"
 authors = [
   {name = "David Brochart", email = "david.brochart@gmail.com"},
 ]
