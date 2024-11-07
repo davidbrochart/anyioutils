@@ -1,5 +1,9 @@
 # Version history
 
+## 0.4.5
+
+- Add `py.typed` marker.
+
 ## 0.4.4
 
 - Add `future.cancel(raise_exception=False)`.
