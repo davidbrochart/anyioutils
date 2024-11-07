@@ -1,5 +1,9 @@
 # Version history
 
+## 0.4.6
+
+- Move `trio` to test dependencies.
+
 ## 0.4.5
 
 - Add `py.typed` marker.
