@@ -1,5 +1,10 @@
 # Version history
 
+## 0.4.7
+
+- Add PyPI trusted publishing.
+- When running coverage, don't run tests again.
+
 ## 0.4.6
 
 - Move `trio` to test dependencies.
