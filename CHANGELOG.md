@@ -1,5 +1,9 @@
 # Version history
 
+## 0.4.8
+
+- Add `wait()`.
+
 ## 0.4.7
 
 - Add PyPI trusted publishing.
