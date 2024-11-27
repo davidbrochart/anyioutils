@@ -1,5 +1,9 @@
 # Version history
 
+## 0.4.9
+
+- Fix types.
+
 ## 0.4.8
 
 - Add `wait()`.
