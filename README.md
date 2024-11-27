@@ -66,3 +66,26 @@ async def main():
 
 run(main)
 ```
+
+## wait
+
+`anyioutils.wait(aws, task_group)` behaves the same as `asyncio.wait(aws)` except that an existing `task_group` has to be passed.
+
+```py
+from anyioutils import ALL_COMPLETED, Task, wait
+from anyio import create_task_group, run
+
+async def foo():
+    return "foo"
+
+async def main():
+    async with create_task_group() as tg:
+        tasks = [Task(aw) for aw in (foo(), foo())]
+        done, pending = await wait(tasks, tg, return_when=ALL_COMPLETED)
+        assert done == set(tasks)
+        assert not pending
+        for task in done:
+            assert task.result() == "foo"
+
+run(main)
+```
