@@ -5,14 +5,14 @@ from anyio import create_task_group, sleep
 pytestmark = pytest.mark.anyio
 
 
-async def foo(wait: float = 0, raise_exception: bool = False):
+async def foo(wait: float = 0, raise_exception: bool = False) -> str:
     await sleep(wait)
     if raise_exception:
         raise RuntimeError("foo")
     return "foo"
 
 
-async def test_wait_all_completed():
+async def test_wait_all_completed() -> None:
     async with create_task_group() as tg:
         tasks = [Task(aw) for aw in (foo(), foo())]
         done, pending = await wait(tasks, tg, return_when=ALL_COMPLETED)
@@ -22,7 +22,7 @@ async def test_wait_all_completed():
             assert task.result() == "foo"
 
 
-async def test_wait_first_completed():
+async def test_wait_first_completed() -> None:
     async with create_task_group() as tg:
         tasks = [Task(aw) for aw in (foo(), foo(wait=0.1))]
         done, pending = await wait(tasks, tg, return_when=FIRST_COMPLETED)
@@ -36,7 +36,7 @@ async def test_wait_first_completed():
             assert await task.wait() == "foo"
 
 
-async def test_wait_first_exception():
+async def test_wait_first_exception() -> None:
     async with create_task_group() as tg:
         tasks = [Task(aw) for aw in (foo(raise_exception=True), foo(wait=0.1))]
         done, pending = await wait(tasks, tg, return_when=FIRST_EXCEPTION)
@@ -52,7 +52,7 @@ async def test_wait_first_exception():
             assert await task.wait() == "foo"
 
 
-async def test_wait_not_tasks():
+async def test_wait_not_tasks() -> None:
     async with create_task_group() as tg:
         aw = foo()
         with pytest.raises(TypeError) as excinfo:

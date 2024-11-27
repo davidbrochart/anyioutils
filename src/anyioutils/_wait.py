@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Iterable, Literal
 
 from anyio import ClosedResourceError, create_memory_object_stream, move_on_after
 from anyio.abc import TaskGroup
@@ -9,9 +9,9 @@ from anyio.streams.memory import MemoryObjectSendStream
 from ._task import Task
 
 
-ALL_COMPLETED = "ALL_COMPLETED"
-FIRST_COMPLETED = "FIRST_COMPLETED"
-FIRST_EXCEPTION = "FIRST_EXCEPTION"
+ALL_COMPLETED: Literal["ALL_COMPLETED"] = "ALL_COMPLETED"
+FIRST_COMPLETED: Literal["FIRST_COMPLETED"] = "FIRST_COMPLETED"
+FIRST_EXCEPTION: Literal["FIRST_EXCEPTION"] = "FIRST_EXCEPTION"
 
 
 async def _run_and_put_task(
@@ -30,11 +30,11 @@ async def _run_and_put_task(
 
 
 async def wait(
-    aws,
+    aws: Iterable[Task],
     task_group: TaskGroup,
     *,
     timeout: float | int | None = None,
-    return_when: Literal["ALL_COMPLETED", "FIRST_COMPLETED", "FIRST_EXCEPTION"] = "ALL_COMPLETED",
+    return_when: Literal["ALL_COMPLETED", "FIRST_COMPLETED", "FIRST_EXCEPTION"] = ALL_COMPLETED,
 ):
     for aw in aws:
         if not isinstance(aw, Task):
