@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Iterable, Literal
 
-from anyio import ClosedResourceError, create_memory_object_stream, move_on_after
+from anyio import create_memory_object_stream, move_on_after
 from anyio.abc import TaskGroup
 from anyio.streams.memory import MemoryObjectSendStream
 
@@ -25,7 +25,7 @@ async def _run_and_put_task(
         exc = e
     try:
         await send_stream.send((task, exc))
-    except ClosedResourceError:
+    except Exception:
         pass
 
 
