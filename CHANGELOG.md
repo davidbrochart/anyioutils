@@ -1,6 +1,6 @@
 # Version history
 
-## 0.4.10
+## 0.4.11
 
 - Ignore any error while sending stream.
 
