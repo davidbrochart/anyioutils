@@ -1,5 +1,9 @@
 # Version history
 
+## 0.4.10
+
+- Ignore any error while sending stream.
+
 ## 0.4.9
 
 - Fix types.
