@@ -92,3 +92,7 @@ async def main():
 
 run(main)
 ```
+
+## Queue
+
+`anyioutils.Queue` behaves the same as `asyncio.Queue`.
