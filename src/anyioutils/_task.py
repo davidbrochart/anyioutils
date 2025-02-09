@@ -46,7 +46,7 @@ class Task:
         await self._cancelled_event.wait()
         task_group.cancel_scope.cancel()
 
-    def cancel(self, raise_exception: bool = True):
+    def cancel(self, raise_exception: bool = False):
         self._done_event.set()
         self._cancelled_event.set()
         self._raise_cancelled_error = raise_exception

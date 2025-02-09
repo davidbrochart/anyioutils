@@ -49,7 +49,7 @@ async def test_cancel():
     assert not future.cancelled()
 
     async def cancel():
-        future.cancel()
+        future.cancel(raise_exception=True)
 
     async with create_task_group() as tg:
         tg.start_soon(cancel)
