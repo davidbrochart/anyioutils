@@ -1,5 +1,10 @@
 # Version history
 
+## 0.5.0
+
+- Add `Queue`.
+- Don't raise exception when cancelling by default.
+
 ## 0.4.11
 
 - Ignore any error while sending stream.
