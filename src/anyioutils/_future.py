@@ -9,7 +9,7 @@ from anyio.abc import TaskGroup
 from ._exceptions import CancelledError, InvalidStateError
 
 if version_info < (3, 11):
-    from exceptiongroup import ExceptionGroup  # pragma: no cover
+    from exceptiongroup import BaseExceptionGroup  # pragma: no cover
 
 T = TypeVar("T")
 
@@ -39,7 +39,7 @@ class Future(Generic[T]):
             return
         if len(exceptions) == 1:
             raise exceptions[0]
-        raise ExceptionGroup("Error while calling callbacks", exceptions)
+        raise BaseExceptionGroup("Error while calling callbacks", exceptions)
 
     async def _wait_result(self, task_group: TaskGroup) -> None:
         await self._result_event.wait()
