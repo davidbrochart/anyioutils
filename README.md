@@ -93,6 +93,10 @@ async def main():
 run(main)
 ```
 
+## Event
+
+`anyioutils.Event` behaves the same as `asyncio.Event`.
+
 ## Queue
 
 `anyioutils.Queue` behaves the same as `asyncio.Queue`.
