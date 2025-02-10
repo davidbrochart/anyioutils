@@ -1,5 +1,12 @@
 # Version history
 
+## 0.6.0
+
+- Add `Event`.
+- Add `TaskGroup` and make `create_task(coro)` use current `TaskGroup` by default.
+- Fix `add_done_callback`.
+- Add `Future` and `Task` generic type.
+
 ## 0.5.0
 
 - Add `Queue`.
