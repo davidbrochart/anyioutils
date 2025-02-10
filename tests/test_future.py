@@ -1,3 +1,5 @@
+from sys import version_info
+
 import pytest
 from anyioutils import CancelledError, Future, InvalidStateError
 from anyio import create_task_group
