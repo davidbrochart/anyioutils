@@ -17,7 +17,8 @@ classifiers = [
   "Programming Language :: Python"
 ]
 dependencies = [
-  "anyio",
+  "anyio >=4.8.0,<5.0.0",
+  "exceptiongroup;python_version<'3.11'",
 ]
 requires-python = ">=3.9"
 
@@ -27,7 +28,6 @@ test = [
   "mypy",
   "pytest",
   "ruff",
-  "exceptiongroup;python_version<'3.11'",
   "trio",
 ]
 
