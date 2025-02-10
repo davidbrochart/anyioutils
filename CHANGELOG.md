@@ -1,5 +1,9 @@
 # Version history
 
+## 0.6.1
+
+- Raise callback exceptions.
+
 ## 0.6.0
 
 - Add `Event`.
