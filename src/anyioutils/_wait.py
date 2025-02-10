@@ -6,7 +6,7 @@ from anyio import create_memory_object_stream, move_on_after
 from anyio.abc import TaskGroup
 from anyio.streams.memory import MemoryObjectSendStream
 
-from ._task import Task
+from ._task import Task, _task_group
 
 
 ALL_COMPLETED: Literal["ALL_COMPLETED"] = "ALL_COMPLETED"
@@ -31,11 +31,13 @@ async def _run_and_put_task(
 
 async def wait(
     aws: Iterable[Task],
-    task_group: TaskGroup,
+    task_group: TaskGroup | None = None,
     *,
     timeout: float | int | None = None,
     return_when: Literal["ALL_COMPLETED", "FIRST_COMPLETED", "FIRST_EXCEPTION"] = ALL_COMPLETED,
 ):
+    if task_group is None:
+        task_group = _task_group.get()
     for aw in aws:
         if not isinstance(aw, Task):
             raise TypeError(f"Pass tasks, not {type(aw)}")
