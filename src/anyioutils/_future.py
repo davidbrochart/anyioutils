@@ -8,8 +8,8 @@ from anyio.abc import TaskGroup
 
 from ._exceptions import CancelledError, InvalidStateError
 
-if version_info < (3, 11):
-    from exceptiongroup import BaseExceptionGroup  # pragma: no cover
+if version_info < (3, 11):  # pragma: no cover
+    from exceptiongroup import BaseExceptionGroup  # type: ignore[import-not-found]
 
 T = TypeVar("T")
 
