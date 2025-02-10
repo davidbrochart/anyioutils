@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Generic, TypeVar
+from typing import Any, Callable, Generic, TypeVar
 from collections.abc import Coroutine
 
 from anyio import Event, create_task_group
@@ -57,7 +57,7 @@ class Task(Generic[T]):
     def cancelled(self) -> bool:
         return self._cancelled_event.is_set()
 
-    async def wait(self) -> T:
+    async def wait(self) -> T | None:
         if self._waiting:
             await self._done_event.wait()
         self._waiting = True
@@ -66,7 +66,7 @@ class Task(Generic[T]):
         if self._cancelled_event.is_set():
             if self._raise_cancelled_error:
                 raise CancelledError
-            return
+            return None
         if self._has_exception:
             assert self._exception is not None
             raise self._exception
@@ -80,10 +80,12 @@ class Task(Generic[T]):
         if self._cancelled_event.is_set():
             if self._raise_cancelled_error:
                 raise CancelledError
-            return
+            return None
         if self._has_exception:
             assert self._exception is not None
             raise self._exception
+
+        return None  # pragma: nocover
 
     def done(self) -> bool:
         return self._done_event.is_set()

@@ -56,7 +56,7 @@ class Future(Generic[T]):
     def cancelled(self) -> bool:
         return self._cancelled_event.is_set()
 
-    async def wait(self) -> T:
+    async def wait(self) -> T | None:
         if self._waiting:
             await self._done_event.wait()
         self._waiting = True
@@ -82,6 +82,8 @@ class Future(Generic[T]):
         if self._cancelled_event.is_set():
             if self._raise_cancelled_error:
                 raise CancelledError
+
+        return None  # pragma: nocover
 
     def done(self) -> bool:
         return self._done_event.is_set()
