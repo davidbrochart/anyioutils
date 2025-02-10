@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Any, Callable, Generic, TypeVar
 from collections.abc import Coroutine
 
 from anyio import Event, create_task_group
@@ -8,12 +8,14 @@ from anyio.abc import TaskGroup
 
 from ._exceptions import CancelledError, InvalidStateError
 
+T = TypeVar("T")
 
-class Task:
+
+class Task(Generic[T]):
     _done_callbacks: list[Callable[[Task], None]]
     _exception: BaseException | None
 
-    def __init__(self, coro: Coroutine[Any, Any, Any]) -> None:
+    def __init__(self, coro: Coroutine[Any, Any, T]) -> None:
         self._coro = coro
         self._has_result = False
         self._has_exception = False
@@ -55,7 +57,7 @@ class Task:
     def cancelled(self) -> bool:
         return self._cancelled_event.is_set()
 
-    async def wait(self) -> Any:
+    async def wait(self) -> T | None:
         if self._waiting:
             await self._done_event.wait()
         self._waiting = True
@@ -64,7 +66,7 @@ class Task:
         if self._cancelled_event.is_set():
             if self._raise_cancelled_error:
                 raise CancelledError
-            return
+            return None
         if self._has_exception:
             assert self._exception is not None
             raise self._exception
@@ -78,18 +80,17 @@ class Task:
         if self._cancelled_event.is_set():
             if self._raise_cancelled_error:
                 raise CancelledError
-            return
+            return None
         if self._has_exception:
             assert self._exception is not None
             raise self._exception
-        raise RuntimeError(  # pragma: no cover
-            "Task has no result, no exception, and was not cancelled"
-        )
+
+        return None  # pragma: nocover
 
     def done(self) -> bool:
         return self._done_event.is_set()
 
-    def result(self) -> Any:
+    def result(self) -> T:
         if self._cancelled_event.is_set():
             raise CancelledError
         if self._has_result:
@@ -108,6 +109,11 @@ class Task:
 
     def add_done_callback(self, callback: Callable[[Task], None]) -> None:
         self._done_callbacks.append(callback)
+        if self._done_event.is_set():
+            try:
+                callback(self)
+            except BaseException:
+                pass
 
     def remove_done_callback(self, callback: Callable[[Task], None]) -> int:
         count = self._done_callbacks.count(callback)
@@ -116,7 +122,7 @@ class Task:
         return count
 
 
-def create_task(coro: Coroutine[Any, Any, Any], task_group: TaskGroup) -> Task:
-    task = Task(coro)
+def create_task(coro: Coroutine[Any, Any, T], task_group: TaskGroup) -> Task[T]:
+    task = Task[T](coro)
     task_group.start_soon(task.wait)
     return task

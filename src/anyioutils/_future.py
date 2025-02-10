@@ -1,14 +1,16 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Callable, Generic, TypeVar
 
 from anyio import Event, create_task_group
 from anyio.abc import TaskGroup
 
 from ._exceptions import CancelledError, InvalidStateError
 
+T = TypeVar("T")
 
-class Future:
+
+class Future(Generic[T]):
     _done_callbacks: list[Callable[[Future], None]]
     _exception: BaseException | None
 
@@ -41,16 +43,20 @@ class Future:
         await self._cancelled_event.wait()
         task_group.cancel_scope.cancel()
 
-    def cancel(self, raise_exception: bool = False) -> None:
+    def cancel(self, raise_exception: bool = False) -> bool:
+        if self._done_event.is_set() or self._cancelled_event.is_set():
+            return False
+
         self._done_event.set()
         self._cancelled_event.set()
         self._raise_cancelled_error = raise_exception
         self._call_callbacks()
+        return True
 
     def cancelled(self) -> bool:
         return self._cancelled_event.is_set()
 
-    async def wait(self) -> Any:
+    async def wait(self) -> T | None:
         if self._waiting:
             await self._done_event.wait()
         self._waiting = True
@@ -76,14 +82,13 @@ class Future:
         if self._cancelled_event.is_set():
             if self._raise_cancelled_error:
                 raise CancelledError
-        raise RuntimeError(  # pragma: no cover
-            "Future has no result, no exception, and was not cancelled"
-        )
+
+        return None  # pragma: nocover
 
     def done(self) -> bool:
         return self._done_event.is_set()
 
-    def set_result(self, value: Any) -> None:
+    def set_result(self, value: T) -> None:
         if self._done_event.is_set():
             raise InvalidStateError
         self._done_event.set()
@@ -91,7 +96,7 @@ class Future:
         self._result_event.set()
         self._call_callbacks()
 
-    def result(self) -> Any:
+    def result(self) -> T:
         if self._cancelled_event.is_set():
             raise CancelledError
         if self._result_event.is_set():
@@ -118,6 +123,11 @@ class Future:
 
     def add_done_callback(self, callback: Callable[[Future], None]) -> None:
         self._done_callbacks.append(callback)
+        if self._done_event.is_set():
+            try:
+                callback(self)
+            except BaseException:
+                pass
 
     def remove_done_callback(self, callback: Callable[[Future], None]) -> int:
         count = self._done_callbacks.count(callback)
