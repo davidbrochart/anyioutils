@@ -5,7 +5,7 @@ from anyioutils import CancelledError, InvalidStateError, Task, create_task
 from anyio import Event, create_task_group, sleep
 
 if version_info < (3, 11):
-    from exceptiongroup import BaseExceptionGroup  # pragma: no cover
+    from exceptiongroup import BaseExceptionGroup, ExceptionGroup  # pragma: no cover
 
 pytestmark = pytest.mark.anyio
 
@@ -137,10 +137,23 @@ async def test_callback():
     task2 = Task(foo())
 
     def callback2(f):
-        raise RuntimeError
+        raise RuntimeError()
 
     task2.add_done_callback(callback2)
-    await task2.wait()
+
+    with pytest.raises(ExceptionGroup):
+        await task2.wait()
+
+    task3 = Task(foo())
+
+    def callback3(f):
+        raise RuntimeError()
+
+    task3.add_done_callback(callback3)
+    task3.add_done_callback(callback3)
+
+    with pytest.raises(ExceptionGroup):
+        await task3.wait()
 
 
 async def test_add_done_callback_already_done():
@@ -156,5 +169,7 @@ async def test_add_done_callback_already_done():
         callback_called = True
         raise RuntimeError()
 
-    task.add_done_callback(callback)
+    with pytest.raises(RuntimeError):
+        task.add_done_callback(callback)
+
     assert callback_called

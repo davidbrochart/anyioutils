@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from sys import version_info
 from collections.abc import Coroutine
 from contextvars import ContextVar
 from typing import Any, Callable, Generic, TypeVar
@@ -8,6 +9,10 @@ from anyio import Event, create_task_group
 from anyio.abc import TaskGroup
 
 from ._exceptions import CancelledError, InvalidStateError
+
+if version_info < (3, 11):  # pragma: no cover
+    from exceptiongroup import BaseExceptionGroup  # type: ignore[import-not-found]
+
 
 T = TypeVar("T")
 _task_group: ContextVar[TaskGroup] = ContextVar("_task_group")
@@ -29,11 +34,17 @@ class Task(Generic[T]):
         self._waiting = False
 
     def _call_callbacks(self) -> None:
+        exceptions = []
         for callback in self._done_callbacks:
             try:
                 callback(self)
-            except BaseException:
-                pass
+            except BaseException as exc:
+                exceptions.append(exc)
+        if not exceptions:
+            return
+        if len(exceptions) == 1:
+            raise exceptions[0]
+        raise BaseExceptionGroup("Error while calling callbacks", exceptions)
 
     async def _wait_result(self, task_group: TaskGroup) -> None:
         try:
@@ -112,10 +123,7 @@ class Task(Generic[T]):
     def add_done_callback(self, callback: Callable[[Task], None]) -> None:
         self._done_callbacks.append(callback)
         if self._done_event.is_set():
-            try:
-                callback(self)
-            except BaseException:
-                pass
+            callback(self)
 
     def remove_done_callback(self, callback: Callable[[Task], None]) -> int:
         count = self._done_callbacks.count(callback)

@@ -1,6 +1,11 @@
+from sys import version_info
+
 import pytest
 from anyioutils import CancelledError, Future, InvalidStateError
 from anyio import create_task_group
+
+if version_info < (3, 11):
+    from exceptiongroup import ExceptionGroup  # pragma: no cover
 
 pytestmark = pytest.mark.anyio
 
@@ -114,10 +119,23 @@ async def test_callback():
     future2 = Future()
 
     def callback2(future):
-        raise RuntimeError
+        raise RuntimeError()
 
     future2.add_done_callback(callback2)
-    future2.set_result(1)
+
+    with pytest.raises(RuntimeError):
+        future2.set_result(1)
+
+    future3 = Future()
+
+    def callback3(future):
+        raise RuntimeError()
+
+    future3.add_done_callback(callback3)
+    future3.add_done_callback(callback3)
+
+    with pytest.raises(ExceptionGroup):
+        future3.set_result(1)
 
 
 async def test_add_done_callback_already_done():
@@ -130,5 +148,7 @@ async def test_add_done_callback_already_done():
         callback_called = True
         raise RuntimeError()
 
-    future.add_done_callback(callback)
+    with pytest.raises(RuntimeError):
+        future.add_done_callback(callback)
+
     assert callback_called
