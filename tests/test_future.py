@@ -49,7 +49,7 @@ async def test_cancel():
     assert not future.cancelled()
 
     async def cancel():
-        future.cancel(raise_exception=True)
+        assert future.cancel(raise_exception=True)
 
     async with create_task_group() as tg:
         tg.start_soon(cancel)
@@ -62,6 +62,27 @@ async def test_cancel():
                 assert future.exception()
             with pytest.raises(CancelledError):
                 future.result()
+
+
+async def test_immediate_cancel():
+    future = Future()
+    assert not future.cancelled()
+    assert future.cancel(raise_exception=True)
+    assert future.cancelled()
+    assert future.done()
+    for _ in range(3):
+        with pytest.raises(CancelledError):
+            await future.wait()
+        with pytest.raises(CancelledError):
+            assert future.exception()
+        with pytest.raises(CancelledError):
+            future.result()
+
+
+def test_cancel_already_done():
+    future = Future()
+    future.set_result(0)
+    assert not future.cancel()
 
 
 async def test_callback():
@@ -97,3 +118,17 @@ async def test_callback():
 
     future2.add_done_callback(callback2)
     future2.set_result(1)
+
+
+async def test_add_done_callback_already_done():
+    future = Future()
+    future.set_result(0)
+    callback_called = False
+
+    def callback(future):
+        nonlocal callback_called
+        callback_called = True
+        raise RuntimeError()
+
+    future.add_done_callback(callback)
+    assert callback_called

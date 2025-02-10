@@ -141,3 +141,20 @@ async def test_callback():
 
     task2.add_done_callback(callback2)
     await task2.wait()
+
+
+async def test_add_done_callback_already_done():
+    async def foo():
+        pass
+
+    task = Task(foo())
+    await task.wait()
+    callback_called = False
+
+    def callback(future):
+        nonlocal callback_called
+        callback_called = True
+        raise RuntimeError()
+
+    task.add_done_callback(callback)
+    assert callback_called
