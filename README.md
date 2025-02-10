@@ -96,3 +96,7 @@ run(main)
 ## Queue
 
 `anyioutils.Queue` behaves the same as `asyncio.Queue`.
+
+## TaskGroup
+
+`anyioutils.TaskGroup` behaves the same as `asyncio.TaskGroup`. Furthermore, when it is used, `anyioutils.create_task(coro)` won't need a task group, as one will be looked up the call stack.

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Generic, TypeVar
 from collections.abc import Coroutine
+from contextvars import ContextVar
+from typing import Any, Callable, Generic, TypeVar
 
 from anyio import Event, create_task_group
 from anyio.abc import TaskGroup
@@ -9,6 +10,7 @@ from anyio.abc import TaskGroup
 from ._exceptions import CancelledError, InvalidStateError
 
 T = TypeVar("T")
+_task_group: ContextVar[TaskGroup] = ContextVar("_task_group")
 
 
 class Task(Generic[T]):
@@ -122,7 +124,9 @@ class Task(Generic[T]):
         return count
 
 
-def create_task(coro: Coroutine[Any, Any, T], task_group: TaskGroup) -> Task[T]:
+def create_task(coro: Coroutine[Any, Any, T], task_group: TaskGroup | None = None) -> Task[T]:
     task = Task[T](coro)
+    if task_group is None:
+        task_group = _task_group.get()
     task_group.start_soon(task.wait)
     return task
