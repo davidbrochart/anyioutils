@@ -5,7 +5,7 @@ from anyioutils import CancelledError, InvalidStateError, Task, create_task
 from anyio import Event, create_task_group, sleep
 
 if version_info < (3, 11):
-    from exceptiongroup import BaseExceptionGroup  # pragma: no cover
+    from exceptiongroup import BaseExceptionGroup, ExceptionGroup  # pragma: no cover
 
 pytestmark = pytest.mark.anyio
 

@@ -2,6 +2,9 @@ import pytest
 from anyioutils import CancelledError, Future, InvalidStateError
 from anyio import create_task_group
 
+if version_info < (3, 11):
+    from exceptiongroup import ExceptionGroup  # pragma: no cover
+
 pytestmark = pytest.mark.anyio
 
 
