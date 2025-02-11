@@ -1,5 +1,9 @@
 # Version history
 
+## 0.6.2
+
+- Fix `Event.clear`.
+
 ## 0.6.1
 
 - Raise callback exceptions.
