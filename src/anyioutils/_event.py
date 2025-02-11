@@ -16,4 +16,5 @@ class Event:
         return self._event.is_set()
 
     def clear(self) -> None:
-        self._event = _Event()
+        if self._event.is_set():
+            self._event = _Event()
