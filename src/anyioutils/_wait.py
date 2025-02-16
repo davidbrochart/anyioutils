@@ -35,7 +35,7 @@ async def wait(
     *,
     timeout: float | int | None = None,
     return_when: Literal["ALL_COMPLETED", "FIRST_COMPLETED", "FIRST_EXCEPTION"] = ALL_COMPLETED,
-):
+) -> tuple[set[Task], set[Task]]:
     if task_group is None:
         task_group = _task_group.get()
     for aw in aws:

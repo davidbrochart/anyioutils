@@ -132,9 +132,9 @@ class Task(Generic[T]):
         return count
 
 
-def create_task(coro: Coroutine[Any, Any, T], task_group: TaskGroup | None = None) -> Task[T]:
+def create_task(coro: Coroutine[Any, Any, T], task_group: TaskGroup | None = None, *, name: str | None = None) -> Task[T]:
     task = Task[T](coro)
     if task_group is None:
         task_group = _task_group.get()
-    task_group.start_soon(task.wait)
+    task_group.start_soon(task.wait, name=name)
     return task
