@@ -1,5 +1,10 @@
 # Version history
 
+## 0.6.3
+
+- Add `TaskGroup.cancel_scope`.
+- Add task name.
+
 ## 0.6.2
 
 - Fix `Event.clear`.
