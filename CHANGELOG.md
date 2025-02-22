@@ -1,5 +1,9 @@
 # Version history
 
+## 0.6.5
+
+- Improve typing of `start_guest_run()`.
+
 ## 0.6.4
 
 - Add guest mode.
