@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, Awaitable, Callable, Literal
+from typing import Awaitable, Callable, Literal, TypeVar
+
+import outcome
+
+RetT = TypeVar("RetT")
 
 
 def start_guest_run(
-    async_fn: Callable[..., Awaitable[Any]],
+    async_fn: Callable[..., Awaitable[RetT]],
     *,
     run_sync_soon_threadsafe: Callable[[Callable[[], object]], object],
-    done_callback: Callable[[Any], object],
+    done_callback: Callable[[outcome.Outcome[RetT]], object],
     run_sync_soon_not_threadsafe: Callable[[Callable[[], object]], object] | None = None,
     backend: Literal["asyncio"] | Literal["trio"] = "asyncio",
 ) -> None:
