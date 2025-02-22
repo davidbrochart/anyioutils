@@ -1,5 +1,10 @@
 # Version history
 
+## 0.6.4
+
+- Add guest mode.
+- Add monitor.
+
 ## 0.6.3
 
 - Add `TaskGroup.cancel_scope`.
