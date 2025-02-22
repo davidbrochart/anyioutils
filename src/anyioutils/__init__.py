@@ -4,6 +4,7 @@ from ._event import Event as Event
 from ._exceptions import CancelledError as CancelledError
 from ._exceptions import InvalidStateError as InvalidStateError
 from ._future import Future as Future
+from ._guest import start_guest_run as start_guest_run
 from ._monitor import Monitor as Monitor
 from ._queue import Queue as Queue
 from ._task import Task as Task

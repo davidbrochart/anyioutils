@@ -1,0 +1,37 @@
+from __future__ import annotations
+
+import inspect
+from typing import Any, Awaitable, Callable, Literal
+
+
+def start_guest_run(
+    async_fn: Callable[..., Awaitable[Any]],
+    *,
+    run_sync_soon_threadsafe: Callable[[Callable[[], object]], object],
+    done_callback: Callable[[Any], object],
+    run_sync_soon_not_threadsafe: Callable[[Callable[[], object]], object] | None = None,
+    backend: Literal["asyncio"] | Literal["trio"] = "asyncio",
+) -> None:
+    if not inspect.iscoroutinefunction(async_fn):
+        raise RuntimeError(f"Expected a coroutine function, got: {async_fn}")
+
+    if backend == "asyncio":
+        import aioguest
+
+        aioguest.start_guest_run(
+            async_fn(),
+            run_sync_soon_threadsafe=run_sync_soon_threadsafe,
+            done_callback=done_callback,
+            run_sync_soon_not_threadsafe=run_sync_soon_not_threadsafe,
+        )
+    elif backend == "trio":
+        import trio
+
+        trio.lowlevel.start_guest_run(
+            async_fn,
+            run_sync_soon_threadsafe=run_sync_soon_threadsafe,
+            done_callback=done_callback,
+            run_sync_soon_not_threadsafe=run_sync_soon_not_threadsafe,
+        )
+    else:
+        raise RuntimeError(f'Backend not supported: "{backend}"')
