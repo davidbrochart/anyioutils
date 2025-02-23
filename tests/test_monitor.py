@@ -31,7 +31,10 @@ async def test_not_busy():
 
     period = 0.01
 
-    async with Monitor(period) as monitor:
+    async with create_task_group() as tg:
+        monitor = Monitor(period)
+        tg.start_soon(monitor.run)
         await sleep(period * 100)
+        tg.cancel_scope.cancel()
 
     assert  1 < monitor.result < 3

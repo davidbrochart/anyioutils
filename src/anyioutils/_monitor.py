@@ -11,7 +11,7 @@ class Monitor:
     async def __aenter__(self) -> "Monitor":
         self._task_group = create_task_group()
         tg = await self._task_group.__aenter__()
-        tg.start_soon(self._run)
+        tg.start_soon(self.run)
         self._cancel_scope = tg.cancel_scope
         return self
 
@@ -19,7 +19,7 @@ class Monitor:
         self._cancel_scope.cancel()
         await self._task_group.__aexit__(None, None, None)
 
-    async def _run(self):
+    async def run(self):
         while True:
             t0 = monotonic()
             await sleep(self._period)
