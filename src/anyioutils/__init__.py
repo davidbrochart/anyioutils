@@ -9,6 +9,7 @@ from ._monitor import Monitor as Monitor
 from ._queue import Queue as Queue
 from ._task import Task as Task
 from ._task import create_task as create_task
+from ._task import start_task as start_task
 from ._task_group import TaskGroup as TaskGroup
 from ._wait import ALL_COMPLETED as ALL_COMPLETED
 from ._wait import FIRST_COMPLETED as FIRST_COMPLETED

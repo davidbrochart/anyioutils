@@ -1,8 +1,9 @@
 from sys import version_info
 
 import pytest
-from anyioutils import CancelledError, InvalidStateError, Task, create_task
-from anyio import Event, create_task_group, sleep
+from anyioutils import CancelledError, InvalidStateError, Task, TaskGroup, create_task, start_task
+from anyio import Event, TASK_STATUS_IGNORED, create_task_group, sleep
+from anyio.abc import TaskStatus
 
 if version_info < (3, 11):
     from exceptiongroup import BaseExceptionGroup, ExceptionGroup  # pragma: no cover
@@ -173,3 +174,13 @@ async def test_add_done_callback_already_done():
         task.add_done_callback(callback)
 
     assert callback_called
+
+
+async def test_start_task():
+    async def foo(*, task_status: TaskStatus[None] = TASK_STATUS_IGNORED):
+        task_status.started(1)
+
+    async with TaskGroup() as tg:
+        task = await start_task(foo)
+        assert await task.wait_started() == 1
+        assert await task.wait() is None
