@@ -1,5 +1,11 @@
 # Version history
 
+## 0.6.6
+
+- Add `start_task()`.
+- Allow `Monitor` to be used without a context manager.
+- Test PyPy v3.11.
+
 ## 0.6.5
 
 - Improve typing of `start_guest_run()`.
