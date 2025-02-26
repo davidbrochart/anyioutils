@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from sys import version_info
-from collections.abc import Coroutine
+from collections.abc import Awaitable, Coroutine
 from contextvars import ContextVar
 from typing import Any, Callable, Generic, TypeVar
 
@@ -9,6 +9,7 @@ from anyio import Event, create_task_group
 from anyio.abc import TaskGroup
 
 from ._exceptions import CancelledError, InvalidStateError
+from ._queue import Queue
 
 if version_info < (3, 11):  # pragma: no cover
     from exceptiongroup import BaseExceptionGroup  # type: ignore[import-not-found]
@@ -32,6 +33,7 @@ class Task(Generic[T]):
         self._done_event = Event()
         self._exception = None
         self._waiting = False
+        self._started_value = Queue[Any]()
 
     def _call_callbacks(self) -> None:
         exceptions = []
@@ -131,6 +133,9 @@ class Task(Generic[T]):
             self._done_callbacks.remove(callback)
         return count
 
+    async def wait_started(self) -> Any:
+        return await self._started_value.get()
+
 
 def create_task(coro: Coroutine[Any, Any, T], task_group: TaskGroup | None = None, *, name: str | None = None) -> Task[T]:
     task = Task[T](coro)
@@ -138,3 +143,26 @@ def create_task(coro: Coroutine[Any, Any, T], task_group: TaskGroup | None = Non
         task_group = _task_group.get()
     task_group.start_soon(task.wait, name=name)
     return task
+
+
+async def start_task(async_fn: Callable[..., Awaitable[Any]], task_group: TaskGroup | None = None, *, name: str | None = None) -> Task[None]:
+    async_function_wrapper = AsyncFunctionWrapper(async_fn)
+    task = Task[None](async_function_wrapper.get_coro())
+    async_function_wrapper.set_task(task)
+    if task_group is None:
+        task_group = _task_group.get()
+    task_group.start_soon(task.wait, name=name)
+    return task
+
+
+class AsyncFunctionWrapper:
+    def __init__(self, async_fn: Callable[..., Awaitable[T]]) -> None:
+        self._async_fn = async_fn
+
+    def set_task(self, task: Task) -> None:
+        self._task = task
+
+    async def get_coro(self) -> None:
+        async with create_task_group() as tg:
+            started_value = await tg.start(self._async_fn)
+            await self._task._started_value.put(started_value)
