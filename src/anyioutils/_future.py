@@ -15,6 +15,16 @@ T = TypeVar("T")
 
 
 class Future(Generic[T]):
+    """
+    A Future represents an eventual result of an asynchronous operation. Not thread-safe.
+
+    Future is an [awaitable](https://docs.python.org/3/glossary.html#term-awaitable) object.
+    Coroutines can await on Future objects until they either have a result or an exception set,
+    or until they are cancelled. A Future can be awaited multiple times and the result is same.
+
+    Typically Futures are used to enable low-level callback-based code to interoperate with high-level async/await code.
+    """
+
     _done_callbacks: list[Callable[[Future], None]]
     _exception: BaseException | None
 
@@ -54,6 +64,18 @@ class Future(Generic[T]):
         task_group.cancel_scope.cancel()
 
     def cancel(self, raise_exception: bool = False) -> bool:
+        """
+        Cancel the Future and schedule callbacks.
+
+        If the Future is already *done* or *cancelled*, return `False`.
+        Otherwise, change the Future's state to *cancelled*, schedule the callbacks, and return `True`.
+
+        Args:
+            raise_exception: Whether to raise a [CancelledError][anyioutils.CancelledError].
+
+        Returns:
+            `False` if the Future is already *done* or *cancelled*, `True` otherwise.
+        """
         if self._done_event.is_set() or self._cancelled_event.is_set():
             return False
 
@@ -64,9 +86,19 @@ class Future(Generic[T]):
         return True
 
     def cancelled(self) -> bool:
+        """
+        Returns:
+            `True` if the Future was cancelled, `False` otherwise.
+        """
         return self._cancelled_event.is_set()
 
     async def wait(self) -> T | None:
+        """
+        Wait for the Future to be *done* or *cancelled*.
+
+        Returns:
+            The Furure's return value.
+        """
         if self._waiting:
             await self._done_event.wait()
         self._waiting = True
@@ -96,9 +128,21 @@ class Future(Generic[T]):
         return None  # pragma: nocover
 
     def done(self) -> bool:
+        """
+        A Future is *done* if it was *cancelled* or if it has a result or an exception set with [set_result()][anyioutils.Future.set_result] or [set_exception()][anyioutils.Future.set_exception] calls.
+
+        Returns:
+            `True` if the Future is *done*.
+        """
         return self._done_event.is_set()
 
     def set_result(self, value: T) -> None:
+        """
+        Mark the Future as *done* and set its result.
+
+        Raises:
+            InvalidStateError: The Future is already *done*.
+        """
         if self._done_event.is_set():
             raise InvalidStateError
         self._done_event.set()
@@ -107,6 +151,18 @@ class Future(Generic[T]):
         self._call_callbacks()
 
     def result(self) -> T:
+        """
+        If the Future is *done* and has a result set by the [set_result()][anyioutils.Future.set_result] method, the result value is returned.
+
+        If the Future is *done* and has an exception set by the [set_exception()][anyioutils.Future.set_exception] method, this method raises the exception.
+
+        If the Future has been *cancelled*, this method raises a [CancelledError][anyioutils.CancelledError] exception.
+
+        If the Future’s result isn’t yet available, this method raises an [InvalidStateError][anyioutils.InvalidStateError] exception.
+
+        Returns:
+            The result of the Future.
+        """
         if self._cancelled_event.is_set():
             raise CancelledError
         if self._result_event.is_set():
@@ -117,6 +173,12 @@ class Future(Generic[T]):
         raise InvalidStateError
 
     def set_exception(self, value: BaseException) -> None:
+        """
+        Mark the Future as *done* and set an exception.
+
+        Raises:
+            InvalidStateError: The Future is already *done*.
+        """
         if self._done_event.is_set():
             raise InvalidStateError
         self._done_event.set()
@@ -125,6 +187,16 @@ class Future(Generic[T]):
         self._call_callbacks()
 
     def exception(self) -> BaseException | None:
+        """
+        The exception (or `None` if no exception was set) is returned only if the Future is *done*.
+
+        If the Future has been *cancelled*, this method raises a [CancelledError][anyioutils.CancelledError] exception.
+
+        If the Future isn’t *done* yet, this method raises an [InvalidStateError][anyioutils.InvalidStateError] exception.
+
+        Returns:
+            The exception that was set on this Future.
+        """
         if not self._done_event.is_set():
             raise InvalidStateError
         if self._cancelled_event.is_set():
@@ -132,11 +204,24 @@ class Future(Generic[T]):
         return self._exception
 
     def add_done_callback(self, callback: Callable[[Future], None]) -> None:
+        """
+        Add a callback to be run when the Future is *done*.
+
+        The *callback* is called with the Future object as its only argument.
+
+        If the Future is already *done* when this method is called, the callback is scheduled immediately.
+        """
         self._done_callbacks.append(callback)
         if self._done_event.is_set():
             callback(self)
 
     def remove_done_callback(self, callback: Callable[[Future], None]) -> int:
+        """
+        Remove *callback* from the callbacks list.
+
+        Returns:
+            The number of callbacks removed, which is typically 1, unless a callback was added more than once.
+        """
         count = self._done_callbacks.count(callback)
         for _ in range(count):
             self._done_callbacks.remove(callback)

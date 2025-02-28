@@ -32,6 +32,11 @@ test = [
   "trio",
   "aioguest",
 ]
+docs = [
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocstrings[python]",
+]
 
 [project.urls]
 Repository = "https://github.com/davidbrochart/anyioutils.git"

@@ -181,6 +181,6 @@ async def test_start_task():
         task_status.started(1)
 
     async with TaskGroup() as tg:
-        task = await start_task(foo)
+        task = start_task(foo)
         assert await task.wait_started() == 1
         assert await task.wait() is None
