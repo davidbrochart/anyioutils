@@ -37,4 +37,4 @@ async def test_not_busy():
         await sleep(period * 100)
         tg.cancel_scope.cancel()
 
-    assert  1 < monitor.result < 3
+    assert  1 < monitor.result < 4

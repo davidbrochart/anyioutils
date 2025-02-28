@@ -57,5 +57,5 @@ async def test_wait_not_tasks() -> None:
         aw = foo()
         with pytest.raises(TypeError) as excinfo:
             done, pending = await wait([aw], tg)
-        assert str(excinfo.value) == "Pass tasks, not <class 'coroutine'>"
+        assert str(excinfo.value) == "Pass tasks or futures, not <class 'coroutine'>"
         await aw

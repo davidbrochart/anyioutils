@@ -16,6 +16,9 @@ def start_guest_run(
     run_sync_soon_not_threadsafe: Callable[[Callable[[], object]], object] | None = None,
     backend: Literal["asyncio"] | Literal["trio"] = "asyncio",
 ) -> None:
+    """
+    See Trio's [guest mode](https://trio.readthedocs.io/en/stable/reference-lowlevel.html#using-guest-mode-to-run-trio-on-top-of-other-event-loops).
+    """
     if not inspect.iscoroutinefunction(async_fn):
         raise RuntimeError(f"Expected a coroutine function, got: {async_fn}")
 

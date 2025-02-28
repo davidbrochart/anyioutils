@@ -4,6 +4,17 @@ from time import monotonic
 
 class Monitor:
     def __init__(self, period: float = 0.01):
+        """
+        Create a Monitor with a [run()][anyioutils.Monitor.run] method that runs a task in the background and measures how saturated the event-loop is.
+        This can also be used to detect (long) blocking calls in the event-loop.
+
+
+        The Monitor can be used as an async context manager, in which case it will automatically run, or by launching its [run()][anyioutils.Monitor.run]
+        method in the backgroup manually.
+
+        Args:
+            period: The period in seconds to make the measurement.
+        """
         self._period = period
         self._result = 0
         self._iter = 1
@@ -20,6 +31,9 @@ class Monitor:
         await self._task_group.__aexit__(None, None, None)
 
     async def run(self):
+        """
+        Run the Monitor. This has to be run in the background.
+        """
         while True:
             t0 = monotonic()
             await sleep(self._period)
@@ -30,4 +44,7 @@ class Monitor:
 
     @property
     def result(self) -> float:
+        """
+        The result of the measurement (greater than `1`). The closer to `1`, the less saturated the event-loop is. The greater, the more saturated the event-loop is.
+        """
         return self._result
