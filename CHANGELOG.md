@@ -1,5 +1,11 @@
 # Version history
 
+## 0.7.0
+
+- Add documentation.
+- Make `start_task` not async.
+- Make `wait` accept futures.
+
 ## 0.6.6
 
 - Add `start_task()`.
