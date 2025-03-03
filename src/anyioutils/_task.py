@@ -15,14 +15,14 @@ from ._queue import Queue
 if version_info < (3, 10):  # pragma: no cover
     from typing_extensions import TypeAlias
 else:
-    from typing import TypeAlias
+    from typing import TypeAlias  # type: ignore[attr-defined,no-redef]
 
 if version_info < (3, 11):  # pragma: no cover
     from exceptiongroup import BaseExceptionGroup  # type: ignore[import-not-found]
 
 
 T = TypeVar("T")
-ExceptionHandler: TypeAlias = Callable[[BaseException], bool] | Callable[[BaseException], Awaitable[bool]]
+ExceptionHandler: TypeAlias = Callable[[BaseException], bool] | Callable[[BaseException], Awaitable[bool]]  # type: ignore[valid-type,operator]
 _task_group: ContextVar[TaskGroup] = ContextVar("_task_group")
 
 
