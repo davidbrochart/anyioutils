@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from inspect import isawaitable
 from sys import version_info
 from collections.abc import Awaitable, Coroutine
 from contextvars import ContextVar
@@ -11,12 +12,24 @@ from anyio.abc import TaskGroup
 from ._exceptions import CancelledError, InvalidStateError
 from ._queue import Queue
 
+if version_info < (3, 10):  # pragma: no cover
+    from typing_extensions import TypeAlias
+else:
+    from typing import TypeAlias  # type: ignore[attr-defined,no-redef]
+
 if version_info < (3, 11):  # pragma: no cover
     from exceptiongroup import BaseExceptionGroup  # type: ignore[import-not-found]
 
 
 T = TypeVar("T")
+ExceptionHandler: TypeAlias = Callable[[BaseException], Any]
 _task_group: ContextVar[TaskGroup] = ContextVar("_task_group")
+
+
+async def ensure_awaitable(obj: T | Awaitable[T]) -> T:
+    if isawaitable(obj):
+        return await obj
+    return obj
 
 
 class Task(Generic[T]):
@@ -35,9 +48,11 @@ class Task(Generic[T]):
     """
     _done_callbacks: list[Callable[[Task], None]]
     _exception: BaseException | None
+    _result: T | None
 
-    def __init__(self, coro: Coroutine[Any, Any, T]) -> None:
+    def __init__(self, coro: Coroutine[Any, Any, T], exception_handler: ExceptionHandler | None = None) -> None:
         self._coro = coro
+        self._exception_handler = exception_handler
         self._has_result = False
         self._has_exception = False
         self._cancelled_event = Event()
@@ -66,8 +81,12 @@ class Task(Generic[T]):
             self._result = await self._coro
             self._has_result = True
         except BaseException as exc:
-            self._exception = exc
-            self._has_exception = True
+            if self._exception_handler is None or not await ensure_awaitable(self._exception_handler(exc)):
+                self._exception = exc
+                self._has_exception = True
+            else:
+                self._result = None
+                self._has_result = True
         self._done_event.set()
         task_group.cancel_scope.cancel()
         self._call_callbacks()
@@ -137,7 +156,7 @@ class Task(Generic[T]):
         """
         return self._done_event.is_set()
 
-    def result(self) -> T:
+    def result(self) -> T | None:
         """
         If the Task is *done*, the result of the wrapped coroutine is returned (or if the coroutine raised an exception, that exception is re-raised).
 
@@ -210,24 +229,37 @@ class Task(Generic[T]):
         return await self._started_value.get()
 
 
-def create_task(coro: Coroutine[Any, Any, T], task_group: TaskGroup | None = None, *, name: str | None = None) -> Task[T]:
+def create_task(
+    coro: Coroutine[Any, Any, T],
+    task_group: TaskGroup | None = None,
+    *,
+    name: str | None = None,
+    exception_handler: ExceptionHandler | None = None,
+) -> Task[T]:
     """
     Wrap the *coro* [coroutine](https://docs.python.org/3/library/asyncio-task.html#coroutine) into a [Task][anyioutils.Task] and schedule its execution.
 
     Args:
         task_group: An optional [TaskGroup](https://anyio.readthedocs.io/en/stable/api.html#anyio.abc.TaskGroup) (from AnyIO) to run the Task in. If not provided, a [TaskGroup][anyioutils.TaskGroup] (from `anyioutils`) will be looked up the call stack and used if found.
+        exception_handler: An optional exception handler. When an exception occurs in the Task, the exception handler is called with the exception. The exception is considered to be handled if the exception handler returns `True`, otherwise the exception is raised.
 
     Returns:
         The Task object.
     """
-    task = Task[T](coro)
+    task = Task[T](coro, exception_handler)
     if task_group is None:
         task_group = _task_group.get()
     task_group.start_soon(task.wait, name=name)
     return task
 
 
-def start_task(async_fn: Callable[..., Awaitable[Any]], task_group: TaskGroup | None = None, *, name: str | None = None) -> Task[None]:
+def start_task(
+    async_fn: Callable[..., Awaitable[Any]],
+    task_group: TaskGroup | None = None,
+    *,
+    name: str | None = None,
+    exception_handler: ExceptionHandler | None = None,
+) -> Task[None]:
     """
     Create a [coroutine](https://docs.python.org/3/library/asyncio-task.html#coroutine) from the *async_fn* async function, wrap it into a [Task][anyioutils.Task] and schedule its execution.
 
@@ -235,12 +267,13 @@ def start_task(async_fn: Callable[..., Awaitable[Any]], task_group: TaskGroup | 
 
     Args:
         task_group: An optional [TaskGroup](https://anyio.readthedocs.io/en/stable/api.html#anyio.abc.TaskGroup) (from AnyIO) to run the Task in. If not provided, a [TaskGroup][anyioutils.TaskGroup] (from `anyioutils`) will be looked up the call stack and used, if found.
+        exception_handler: An optional exception handler. When an exception occurs in the Task, the exception handler is called with the exception. The exception is considered to be handled if the exception handler returns `True`, otherwise the exception is raised.
 
     Returns:
         The Task object.
     """
     async_function_wrapper = AsyncFunctionWrapper(async_fn)
-    task = Task[None](async_function_wrapper.get_coro())
+    task = Task[None](async_function_wrapper.get_coro(), exception_handler)
     async_function_wrapper.set_task(task)
     if task_group is None:
         task_group = _task_group.get()
