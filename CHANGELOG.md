@@ -1,5 +1,9 @@
 # Version history
 
+## 0.7.1
+
+- Add `Task` exception handler.
+
 ## 0.7.0
 
 - Add documentation.
