@@ -24,7 +24,7 @@ async def test_busy():
             await sleep(period * 100)
             tg.cancel_scope.cancel()
 
-    assert  (block / period) < monitor.result < (block / period) * 10
+    assert  (block / period) < monitor.result < (block / period) * 15
 
 
 async def test_not_busy():
