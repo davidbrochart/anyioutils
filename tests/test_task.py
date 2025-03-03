@@ -39,7 +39,7 @@ async def test_task_result2():
 
 async def test_exception():
     async def foo():
-        raise RuntimeError
+        raise RuntimeError()
 
     task = Task(foo())
     with pytest.raises(InvalidStateError):
@@ -53,6 +53,50 @@ async def test_exception():
             assert type(task.exception()) == RuntimeError
             with pytest.raises(RuntimeError):
                 task.result()
+
+
+async def test_exception_handler():
+    expected_exc = None
+    actual_exc = None
+
+    async def foo():
+        nonlocal expected_exc
+        expected_exc = RuntimeError()
+        raise expected_exc
+
+    def exception_handler(exc):
+        nonlocal actual_exc
+        actual_exc = exc
+        return True
+
+    async with create_task_group() as tg:
+        task = create_task(foo(), tg, exception_handler=exception_handler)
+        await task.wait()
+
+    assert expected_exc is not None
+    assert expected_exc is actual_exc
+
+
+async def test_async_exception_handler():
+    expected_exc = None
+    actual_exc = None
+
+    async def foo():
+        nonlocal expected_exc
+        expected_exc = RuntimeError()
+        raise expected_exc
+
+    async def exception_handler(exc):
+        nonlocal actual_exc
+        actual_exc = exc
+        return True
+
+    async with create_task_group() as tg:
+        task = create_task(foo(), tg, exception_handler=exception_handler)
+        await task.wait()
+
+    assert expected_exc is not None
+    assert expected_exc is actual_exc
 
 
 async def test_task_cancelled1():
