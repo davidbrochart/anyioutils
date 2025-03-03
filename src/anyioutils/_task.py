@@ -22,7 +22,7 @@ if version_info < (3, 11):  # pragma: no cover
 
 
 T = TypeVar("T")
-ExceptionHandler: TypeAlias = Callable[[BaseException], bool] | Callable[[BaseException], Awaitable[bool]]  # type: ignore[valid-type,operator]
+ExceptionHandler: TypeAlias = Callable[[BaseException], Any]
 _task_group: ContextVar[TaskGroup] = ContextVar("_task_group")
 
 
