@@ -4,13 +4,18 @@ from inspect import isawaitable
 from sys import version_info
 from collections.abc import Awaitable, Coroutine
 from contextvars import ContextVar
-from typing import Any, Callable, Generic, TypeAlias, TypeVar
+from typing import Any, Callable, Generic, TypeVar
 
 from anyio import Event, create_task_group
 from anyio.abc import TaskGroup
 
 from ._exceptions import CancelledError, InvalidStateError
 from ._queue import Queue
+
+if version_info < (3, 10):  # pragma: no cover
+    from typing_extensions import TypeAlias
+else:
+    from typing import TypeAlias
 
 if version_info < (3, 11):  # pragma: no cover
     from exceptiongroup import BaseExceptionGroup  # type: ignore[import-not-found]
