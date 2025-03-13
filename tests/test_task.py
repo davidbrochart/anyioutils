@@ -150,6 +150,14 @@ async def test_task_cancelled3():
         assert await task.wait() is None
 
 
+async def test_task_cancelled4():
+    async def bar(): pass
+
+    async with create_task_group() as tg:
+        task = create_task(bar(), tg)
+        task.cancel()
+
+
 async def test_callback():
     async def foo():
         pass
