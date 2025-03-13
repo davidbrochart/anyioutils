@@ -1,5 +1,9 @@
 # Version history
 
+## 0.7.2
+
+- When `Task` is cancelled, close coroutine if not started.
+
 ## 0.7.1
 
 - Add `Task` exception handler.
