@@ -55,6 +55,7 @@ class Task(Generic[T]):
         self._exception_handler = exception_handler
         self._has_result = False
         self._has_exception = False
+        self._coro_started = False
         self._cancelled_event = Event()
         self._raise_cancelled_error = True
         self._done_callbacks = []
@@ -78,6 +79,7 @@ class Task(Generic[T]):
 
     async def _wait_result(self, task_group: TaskGroup) -> None:
         try:
+            self._coro_started = True
             self._result = await self._coro
             self._has_result = True
         except BaseException as exc:
@@ -99,6 +101,8 @@ class Task(Generic[T]):
         """
         Request the Task to be cancelled.
         """
+        if not self._coro_started:
+            self._coro.close()
         self._done_event.set()
         self._cancelled_event.set()
         self._raise_cancelled_error = raise_exception
