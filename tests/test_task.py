@@ -150,12 +150,18 @@ async def test_task_cancelled3():
         assert await task.wait() is None
 
 
-async def test_task_cancelled4():
-    async def bar(): pass
+async def test_task_cancelled_not_started():
+    started = False
+
+    async def bar():
+        nonlocal started
+        started = True  # pragma: nocover
 
     async with create_task_group() as tg:
         task = create_task(bar(), tg)
         task.cancel()
+
+    assert not started
 
 
 async def test_callback():
