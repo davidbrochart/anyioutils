@@ -1,5 +1,9 @@
 # Version history
 
+## 0.7.3
+
+- Add `TaskGroup.create_task(coro, background=True)` to run a task in the background and cancel it when the task group exits.
+
 ## 0.7.2
 
 - When `Task` is cancelled, close coroutine if not started.
