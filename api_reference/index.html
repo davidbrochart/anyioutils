@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.8">
     
     
       
@@ -1388,6 +1388,7 @@
 
 
 
+
   <div class="doc doc-children">
 
 
@@ -1421,6 +1422,7 @@
 
 
 
+
     </div>
 
 </div>
@@ -1441,7 +1443,12 @@
 
         <p>An event object. Not thread-safe.</p>
 <p>An event can be used to notify multiple tasks that some event has happened.</p>
-<p>An Event object manages an internal flag that can be set to <code>True</code> with the <a class="autorefs autorefs-internal" href="#anyioutils.Event.set">set()</a> method and reset to <code>False</code> with the <a class="autorefs autorefs-internal" href="#anyioutils.Event.clear">clear()</a> method. The <a class="autorefs autorefs-internal" href="#anyioutils.Event.wait">wait()</a> method blocks until the flag is set to <code>True</code>. The flag is set to <code>False</code> initially.</p>
+<p>An Event object manages an internal flag that can be set to <code>True</code> with the <a class="autorefs autorefs-internal" title="set()" href="#anyioutils.Event.set">set()</a> method and reset to <code>False</code> with the <a class="autorefs autorefs-internal" title="clear()" href="#anyioutils.Event.clear">clear()</a> method. The <a class="autorefs autorefs-internal" title="wait()
+
+  
+      async
+  " href="#anyioutils.Event.wait">wait()</a> method blocks until the flag is set to <code>True</code>. The flag is set to <code>False</code> initially.</p>
+
 
 
 
@@ -1473,7 +1480,12 @@
     <div class="doc doc-contents ">
 
         <p>Clear (unset) the event.</p>
-<p>Tasks awaiting on <a class="autorefs autorefs-internal" href="#anyioutils.Event.wait">wait()</a> will now block until the <a class="autorefs autorefs-internal" href="#anyioutils.Event.set">set()</a> method is called again.</p>
+<p>Tasks awaiting on <a class="autorefs autorefs-internal" title="wait()
+
+  
+      async
+  " href="#anyioutils.Event.wait">wait()</a> will now block until the <a class="autorefs autorefs-internal" title="set()" href="#anyioutils.Event.set">set()</a> method is called again.</p>
+
 
     </div>
 
@@ -1514,6 +1526,7 @@
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -1531,6 +1544,7 @@
 
         <p>Set the event.</p>
 <p>All tasks waiting for event to be set will be immediately awakened.</p>
+
 
     </div>
 
@@ -1569,12 +1583,13 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>If the event is set, return <code>True</code> immediately. Otherwise block until another task calls <a class="autorefs autorefs-internal" href="#anyioutils.Event.set">set()</a>.</p>
+                <p>If the event is set, return <code>True</code> immediately. Otherwise block until another task calls <a class="autorefs autorefs-internal" title="set()" href="#anyioutils.Event.set">set()</a>.</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -1618,6 +1633,7 @@ or until they are cancelled. A Future can be awaited multiple times and the resu
 
 
 
+
   <div class="doc doc-children">
 
 
@@ -1642,6 +1658,7 @@ or until they are cancelled. A Future can be awaited multiple times and the resu
         <p>Add a callback to be run when the Future is <em>done</em>.</p>
 <p>The <em>callback</em> is called with the Future object as its only argument.</p>
 <p>If the Future is already <em>done</em> when this method is called, the callback is scheduled immediately.</p>
+
 
     </div>
 
@@ -1716,6 +1733,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -1755,6 +1773,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -1770,7 +1789,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
 
     <div class="doc doc-contents ">
 
-        <p>A Future is <em>done</em> if it was <em>cancelled</em> or if it has a result or an exception set with <a class="autorefs autorefs-internal" href="#anyioutils.Future.set_result">set_result()</a> or <a class="autorefs autorefs-internal" href="#anyioutils.Future.set_exception">set_exception()</a> calls.</p>
+        <p>A Future is <em>done</em> if it was <em>cancelled</em> or if it has a result or an exception set with <a class="autorefs autorefs-internal" title="set_result(value)" href="#anyioutils.Future.set_result">set_result()</a> or <a class="autorefs autorefs-internal" title="set_exception(value)" href="#anyioutils.Future.set_exception">set_exception()</a> calls.</p>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -1794,6 +1813,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -1837,6 +1857,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -1877,6 +1898,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -1892,8 +1914,8 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
 
     <div class="doc doc-contents ">
 
-        <p>If the Future is <em>done</em> and has a result set by the <a class="autorefs autorefs-internal" href="#anyioutils.Future.set_result">set_result()</a> method, the result value is returned.</p>
-<p>If the Future is <em>done</em> and has an exception set by the <a class="autorefs autorefs-internal" href="#anyioutils.Future.set_exception">set_exception()</a> method, this method raises the exception.</p>
+        <p>If the Future is <em>done</em> and has a result set by the <a class="autorefs autorefs-internal" title="set_result(value)" href="#anyioutils.Future.set_result">set_result()</a> method, the result value is returned.</p>
+<p>If the Future is <em>done</em> and has an exception set by the <a class="autorefs autorefs-internal" title="set_exception(value)" href="#anyioutils.Future.set_exception">set_exception()</a> method, this method raises the exception.</p>
 <p>If the Future has been <em>cancelled</em>, this method raises a <a class="autorefs autorefs-internal" href="#anyioutils.CancelledError">CancelledError</a> exception.</p>
 <p>If the Future’s result isn’t yet available, this method raises an <a class="autorefs autorefs-internal" href="#anyioutils.InvalidStateError">InvalidStateError</a> exception.</p>
 
@@ -1919,6 +1941,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -1949,7 +1972,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anyioutils._exceptions.InvalidStateError" href="#anyioutils.InvalidStateError">InvalidStateError</a></code>
+                  <code><a class="autorefs autorefs-internal" title="InvalidStateError (anyioutils._exceptions.InvalidStateError)" href="#anyioutils.InvalidStateError">InvalidStateError</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1959,6 +1982,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -1989,7 +2013,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anyioutils._exceptions.InvalidStateError" href="#anyioutils.InvalidStateError">InvalidStateError</a></code>
+                  <code><a class="autorefs autorefs-internal" title="InvalidStateError (anyioutils._exceptions.InvalidStateError)" href="#anyioutils.InvalidStateError">InvalidStateError</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1999,6 +2023,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -2044,6 +2069,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -2081,6 +2107,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
 
 
 
+
     </div>
 
 </div>
@@ -2097,6 +2124,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
 
 
     <div class="doc doc-contents ">
+
 
 
 
@@ -2132,6 +2160,7 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
     <div class="doc doc-contents ">
 
         <p>The result of the measurement (greater than <code>1</code>). The closer to <code>1</code>, the less saturated the event-loop is. The greater, the more saturated the event-loop is.</p>
+
     </div>
 
 </div>
@@ -2149,9 +2178,17 @@ Otherwise, change the Future's state to <em>cancelled</em>, schedule the callbac
 
     <div class="doc doc-contents ">
 
-        <p>Create a Monitor with a <a class="autorefs autorefs-internal" href="#anyioutils.Monitor.run">run()</a> method that runs a task in the background and measures how saturated the event-loop is.
+        <p>Create a Monitor with a <a class="autorefs autorefs-internal" title="run()
+
+  
+      async
+  " href="#anyioutils.Monitor.run">run()</a> method that runs a task in the background and measures how saturated the event-loop is.
 This can also be used to detect (long) blocking calls in the event-loop.</p>
-<p>The Monitor can be used as an async context manager, in which case it will automatically run, or by launching its <a class="autorefs autorefs-internal" href="#anyioutils.Monitor.run">run()</a>
+<p>The Monitor can be used as an async context manager, in which case it will automatically run, or by launching its <a class="autorefs autorefs-internal" title="run()
+
+  
+      async
+  " href="#anyioutils.Monitor.run">run()</a>
 method in the backgroup manually.</p>
 
 
@@ -2185,6 +2222,7 @@ method in the backgroup manually.</p>
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -2205,6 +2243,7 @@ method in the backgroup manually.</p>
     <div class="doc doc-contents ">
 
         <p>Run the Monitor. This has to be run in the background.</p>
+
 
     </div>
 
@@ -2242,6 +2281,7 @@ method in the backgroup manually.</p>
 
 
 
+
   <div class="doc doc-children">
 
 
@@ -2267,6 +2307,7 @@ method in the backgroup manually.</p>
     <div class="doc doc-contents ">
 
         <p>Number of items allowed in the queue.</p>
+
     </div>
 
 </div>
@@ -2285,7 +2326,12 @@ method in the backgroup manually.</p>
     <div class="doc doc-contents ">
 
         <p>A first in, first out (FIFO) queue.</p>
-<p>If <em>maxsize</em> is less than or equal to zero, the queue size is infinite. If it is an integer greater than <code>0</code>, then <code>await put()</code> blocks when the queue reaches <em>maxsize</em> until an item is removed by <a class="autorefs autorefs-internal" href="#anyioutils.Queue.get">get()</a>.</p>
+<p>If <em>maxsize</em> is less than or equal to zero, the queue size is infinite. If it is an integer greater than <code>0</code>, then <code>await put()</code> blocks when the queue reaches <em>maxsize</em> until an item is removed by <a class="autorefs autorefs-internal" title="get()
+
+  
+      async
+  " href="#anyioutils.Queue.get">get()</a>.</p>
+
 
     </div>
 
@@ -2326,6 +2372,7 @@ method in the backgroup manually.</p>
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -2358,12 +2405,17 @@ method in the backgroup manually.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p><code>True</code> if there are <a class="autorefs autorefs-internal" href="#anyioutils.Queue.maxsize">maxsize</a> items in the queue.</p>
+                <p><code>True</code> if there are <a class="autorefs autorefs-internal" title="maxsize
+
+  
+      property
+  " href="#anyioutils.Queue.maxsize">maxsize</a> items in the queue.</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -2409,6 +2461,7 @@ method in the backgroup manually.</p>
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -2447,6 +2500,7 @@ method in the backgroup manually.</p>
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -2500,6 +2554,7 @@ method in the backgroup manually.</p>
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -2548,6 +2603,7 @@ method in the backgroup manually.</p>
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -2587,6 +2643,7 @@ method in the backgroup manually.</p>
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -2618,9 +2675,10 @@ method in the backgroup manually.</p>
         <p>A Future-like object that runs a Python <a href="https://docs.python.org/3/library/asyncio-task.html#coroutine">coroutine</a>. Not thread-safe.</p>
 <p>Tasks are used to run coroutines in event loops. If a coroutine awaits on a Future, the Task suspends the execution of the coroutine and waits for the completion of the Future. When the Future is done, the execution of the wrapped coroutine resumes.</p>
 <p>Event loops use cooperative scheduling: an event loop runs one Task at a time. While a Task awaits for the completion of a Future, the event loop runs other Tasks, callbacks, or performs IO operations.</p>
-<p>Use the high-level <a class="autorefs autorefs-internal" href="#anyioutils.create_task">anyioutils.create_task()</a> function to create Tasks. Manual instantiation of Tasks is discouraged.</p>
-<p>To cancel a running Task use the <a class="autorefs autorefs-internal" href="#anyioutils.Task.cancel">cancel()</a> method. Calling it will cause the Task to throw a <a class="autorefs autorefs-internal" href="#anyioutils.CancelledError">CancelledError</a> exception into the wrapped coroutine. If a coroutine is awaiting on a Future object during cancellation, the Future object will be cancelled.</p>
-<p><a class="autorefs autorefs-internal" href="#anyioutils.Task.cancelled">cancelled()</a> can be used to check if the Task was cancelled.</p>
+<p>Use the high-level <a class="autorefs autorefs-internal" title="create_task(coro, task_group=None, *, name=None, exception_handler=None)" href="#anyioutils.create_task">anyioutils.create_task()</a> function to create Tasks. Manual instantiation of Tasks is discouraged.</p>
+<p>To cancel a running Task use the <a class="autorefs autorefs-internal" title="cancel(raise_exception=False)" href="#anyioutils.Task.cancel">cancel()</a> method. Calling it will cause the Task to throw a <a class="autorefs autorefs-internal" href="#anyioutils.CancelledError">CancelledError</a> exception into the wrapped coroutine. If a coroutine is awaiting on a Future object during cancellation, the Future object will be cancelled.</p>
+<p><a class="autorefs autorefs-internal" title="cancelled()" href="#anyioutils.Task.cancelled">cancelled()</a> can be used to check if the Task was cancelled.</p>
+
 
 
 
@@ -2653,7 +2711,8 @@ method in the backgroup manually.</p>
 
         <p>Add a callback to be run when the Task is <em>done</em>.</p>
 <p>This method should only be used in low-level callback-based code.</p>
-<p>See the documentation of <a class="autorefs autorefs-internal" href="#anyioutils.Future.add_done_callback">Future.add_done_callback()</a> for more details.</p>
+<p>See the documentation of <a class="autorefs autorefs-internal" title="add_done_callback(callback)" href="#anyioutils.Future.add_done_callback">Future.add_done_callback()</a> for more details.</p>
+
 
     </div>
 
@@ -2671,6 +2730,7 @@ method in the backgroup manually.</p>
     <div class="doc doc-contents ">
 
         <p>Request the Task to be cancelled.</p>
+
 
     </div>
 
@@ -2711,6 +2771,7 @@ method in the backgroup manually.</p>
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -2733,6 +2794,7 @@ method in the backgroup manually.</p>
   <summary>Return</summary>
   <p><code>True</code> if the Task is done.</p>
 </details>
+
     </div>
 
 </div>
@@ -2775,6 +2837,7 @@ method in the backgroup manually.</p>
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -2792,7 +2855,8 @@ method in the backgroup manually.</p>
 
         <p>Remove <em>callback</em> from the callbacks list.</p>
 <p>This method should only be used in low-level callback-based code.</p>
-<p>See the documentation of <a class="autorefs autorefs-internal" href="#anyioutils.Future.remove_done_callback">Future.remove_done_callback()</a> for more details.</p>
+<p>See the documentation of <a class="autorefs autorefs-internal" title="remove_done_callback(callback)" href="#anyioutils.Future.remove_done_callback">Future.remove_done_callback()</a> for more details.</p>
+
 
     </div>
 
@@ -2818,6 +2882,7 @@ method in the backgroup manually.</p>
   <summary>Return</summary>
   <p>The result of the Task.</p>
 </details>
+
     </div>
 
 </div>
@@ -2862,6 +2927,7 @@ method in the backgroup manually.</p>
       </tbody>
     </table>
 
+
     </div>
 
 </div>
@@ -2882,7 +2948,7 @@ method in the backgroup manually.</p>
     <div class="doc doc-contents ">
 
         <p>Wait for the task to be <a href="https://anyio.readthedocs.io/en/stable/tasks.html#starting-and-initializing-tasks">started</a>.
-The task must have been created with <a class="autorefs autorefs-internal" href="#anyioutils.start_task">start_task()</a>, not <a class="autorefs autorefs-internal" href="#anyioutils.create_task">create_task</a>.</p>
+The task must have been created with <a class="autorefs autorefs-internal" title="start_task(async_fn, task_group=None, *, name=None, exception_handler=None)" href="#anyioutils.start_task">start_task()</a>, not <a class="autorefs autorefs-internal" title="create_task(coro, task_group=None, *, name=None, exception_handler=None)" href="#anyioutils.create_task">create_task</a>.</p>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -2906,6 +2972,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -2933,8 +3000,9 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
     <div class="doc doc-contents ">
 
 
-        <p>An <a href="https://docs.python.org/3/reference/datamodel.html#async-context-managers">asynchronous context manager</a> holding a group of tasks. Tasks can be added to the group using <a class="autorefs autorefs-internal" href="#anyioutils.TaskGroup.create_task">create_task()</a>. All tasks are awaited when the context manager exits.</p>
-<p>Tasks created down the call stack using <a class="autorefs autorefs-internal" href="#anyioutils.create_task">create_task()</a> or <a class="autorefs autorefs-internal" href="#anyioutils.start_task">start_task()</a> may not need to be passed a TaskGroup, since they could use this TaskGroup implicitly.</p>
+        <p>An <a href="https://docs.python.org/3/reference/datamodel.html#async-context-managers">asynchronous context manager</a> holding a group of tasks. Tasks can be added to the group using <a class="autorefs autorefs-internal" title="create_task(coro, *, name=None, background=False)" href="#anyioutils.TaskGroup.create_task">create_task()</a>. All tasks are awaited when the context manager exits.</p>
+<p>Tasks created down the call stack using <a class="autorefs autorefs-internal" title="create_task(coro, task_group=None, *, name=None, exception_handler=None)" href="#anyioutils.create_task">create_task()</a> or <a class="autorefs autorefs-internal" title="start_task(async_fn, task_group=None, *, name=None, exception_handler=None)" href="#anyioutils.start_task">start_task()</a> may not need to be passed a TaskGroup, since they could use this TaskGroup implicitly.</p>
+
 
 
 
@@ -2991,6 +3059,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
           </tr>
       </tbody>
     </table>
+
     </div>
 
 </div>
@@ -3001,7 +3070,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
 
 
 <h3 id="anyioutils.TaskGroup.create_task" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">create_task</span><span class="p">(</span><span class="n">coro</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">create_task</span><span class="p">(</span><span class="n">coro</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h3>
 
@@ -3011,27 +3080,54 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
         <p>Create a task in this task group.</p>
 
 
-    <p><span class="doc-section-title">Returns:</span></p>
+<p><span class="doc-section-title">Parameters:</span></p>
     <table>
       <thead>
         <tr>
+          <th>Name</th>
           <th>Type</th>
           <th>Description</th>
+          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anyioutils._task.Task" href="#anyioutils.Task">Task</a>[<span title="anyioutils._task_group.T">T</span>]</code>
+                <code>background</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The created Task.</p>
+                <p>Whether to run the task in the background, in which case it will be cancelled when the task group exits.</p>
               </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The task name.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
     </table>
+        <p>Returns:
+    The created Task.</p>
+
 
     </div>
 
@@ -3050,7 +3146,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
 
 
 <h2 id="anyioutils.create_task" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">create_task</span><span class="p">(</span><span class="n">coro</span><span class="p">,</span> <span class="n">task_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">create_task</span><span class="p">(</span><span class="n">coro</span><span class="p">,</span> <span class="n">task_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exception_handler</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -3087,6 +3183,22 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
                   <code>None</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exception_handler</code>
+            </td>
+            <td>
+                  <code><span title="anyioutils._task.ExceptionHandler">ExceptionHandler</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An optional exception handler. When an exception occurs in the Task, the exception handler is called with the exception. The exception is considered to be handled if the exception handler returns <code>True</code>, otherwise the exception is raised.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -3102,7 +3214,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anyioutils._task.Task" href="#anyioutils.Task">Task</a>[<span title="anyioutils._task.T">T</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Task (anyioutils._task.Task)" href="#anyioutils.Task">Task</a>[<span title="anyioutils._task.T">T</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3112,6 +3224,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -3130,6 +3243,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
 
         <p>See Trio's <a href="https://trio.readthedocs.io/en/stable/reference-lowlevel.html#using-guest-mode-to-run-trio-on-top-of-other-event-loops">guest mode</a>.</p>
 
+
     </div>
 
 </div>
@@ -3138,7 +3252,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
 
 
 <h2 id="anyioutils.start_task" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">start_task</span><span class="p">(</span><span class="n">async_fn</span><span class="p">,</span> <span class="n">task_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">start_task</span><span class="p">(</span><span class="n">async_fn</span><span class="p">,</span> <span class="n">task_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exception_handler</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -3146,7 +3260,15 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
     <div class="doc doc-contents ">
 
         <p>Create a <a href="https://docs.python.org/3/library/asyncio-task.html#coroutine">coroutine</a> from the <em>async_fn</em> async function, wrap it into a <a class="autorefs autorefs-internal" href="#anyioutils.Task">Task</a> and schedule its execution.</p>
-<p>The Task's <a class="autorefs autorefs-internal" href="#anyioutils.Task.wait">wait()</a> method will only return <code>None</code>, but its <a class="autorefs autorefs-internal" href="#anyioutils.Task.wait_started">wait_started()</a> method will return its started value.</p>
+<p>The Task's <a class="autorefs autorefs-internal" title="wait()
+
+  
+      async
+  " href="#anyioutils.Task.wait">wait()</a> method will only return <code>None</code>, but its <a class="autorefs autorefs-internal" title="wait_started()
+
+  
+      async
+  " href="#anyioutils.Task.wait_started">wait_started()</a> method will return its started value.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -3176,6 +3298,22 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
                   <code>None</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exception_handler</code>
+            </td>
+            <td>
+                  <code><span title="anyioutils._task.ExceptionHandler">ExceptionHandler</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An optional exception handler. When an exception occurs in the Task, the exception handler is called with the exception. The exception is considered to be handled if the exception handler returns <code>True</code>, otherwise the exception is raised.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -3191,7 +3329,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anyioutils._task.Task" href="#anyioutils.Task">Task</a>[None]</code>
+                  <code><a class="autorefs autorefs-internal" title="Task (anyioutils._task.Task)" href="#anyioutils.Task">Task</a>[None]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3201,6 +3339,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -3305,7 +3444,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="tuple">tuple</span>[<span title="set">set</span>[<a class="autorefs autorefs-internal" title="anyioutils._task.Task" href="#anyioutils.Task">Task</a> | <a class="autorefs autorefs-internal" title="anyioutils._future.Future" href="#anyioutils.Future">Future</a>], <span title="set">set</span>[<a class="autorefs autorefs-internal" title="anyioutils._task.Task" href="#anyioutils.Task">Task</a> | <a class="autorefs autorefs-internal" title="anyioutils._future.Future" href="#anyioutils.Future">Future</a>]]</code>
+                  <code><span title="tuple">tuple</span>[<span title="set">set</span>[<a class="autorefs autorefs-internal" title="Task (anyioutils._task.Task)" href="#anyioutils.Task">Task</a> | <a class="autorefs autorefs-internal" title="Future (anyioutils._future.Future)" href="#anyioutils.Future">Future</a>], <span title="set">set</span>[<a class="autorefs autorefs-internal" title="Task (anyioutils._task.Task)" href="#anyioutils.Task">Task</a> | <a class="autorefs autorefs-internal" title="Future (anyioutils._future.Future)" href="#anyioutils.Future">Future</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3315,6 +3454,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
           </tr>
       </tbody>
     </table>
+
 
     </div>
 
@@ -3382,7 +3522,7 @@ The task must have been created with <a class="autorefs autorefs-internal" href=
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "navigation.sections", "search.suggest", "search.highlight", "content.code.annotate", "content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
       
     
   </body>
