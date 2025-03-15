@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import AsyncExitStack
+from types import TracebackType
 from typing import Any, Coroutine, TypeVar
 
 from anyio import CancelScope, create_task_group
@@ -16,6 +17,9 @@ class TaskGroup:
 
     Tasks created down the call stack using [create_task()][anyioutils.create_task] or [start_task()][anyioutils.start_task] may not need to be passed a TaskGroup, since they could use this TaskGroup implicitly.
     """
+    def __init__(self):
+        self._background_tasks = []
+
     @property
     def cancel_scope(self) -> CancelScope:
         """
@@ -31,15 +35,28 @@ class TaskGroup:
             self._exit_stack = exit_stack.pop_all()
         return self
 
-    async def __aexit__(self, exc_type, exc_value, exc_tb):
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         _task_group.reset(self._token)
-        return await self._exit_stack.__aexit__(exc_type, exc_value, exc_tb)
+        for task in self._background_tasks:
+            task.cancel()
+        await self._exit_stack.__aexit__(exc_type, exc_value, exc_tb)
 
-    def create_task(self, coro: Coroutine[Any, Any, T], *, name: str | None = None) -> Task[T]:
+    def create_task(self, coro: Coroutine[Any, Any, T], *, name: str | None = None, background: bool = False) -> Task[T]:
         """
         Create a task in this task group.
 
+        Args:
+            background: Whether to run the task in the background, in which case it will be cancelled when the task group exits.
+            name: The task name.
         Returns:
             The created Task.
         """
-        return _create_task(coro, self._task_group, name=name)
+        task = _create_task(coro, self._task_group, name=name)
+        if background:
+            self._background_tasks.append(task)
+        return task
