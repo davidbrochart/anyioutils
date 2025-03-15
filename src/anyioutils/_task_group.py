@@ -13,7 +13,7 @@ T = TypeVar("T")
 
 class TaskGroup:
     """
-    An [asynchronous context manager](https://docs.python.org/3/reference/datamodel.html#async-context-managers) holding a group of tasks. Tasks can be added to the group using [create_task()][anyioutils.TaskGroup.create_task]. All tasks are awaited when the context manager exits.
+    An [asynchronous context manager](https://docs.python.org/3/reference/datamodel.html#async-context-managers) holding a group of tasks. Tasks can be added to the group using [create_task()][anyioutils.TaskGroup.create_task]. All tasks are awaited when the context manager exits, unless they have been created with `background=True`.
 
     Tasks created down the call stack using [create_task()][anyioutils.create_task] or [start_task()][anyioutils.start_task] may not need to be passed a TaskGroup, since they could use this TaskGroup implicitly.
     """
