@@ -3000,7 +3000,7 @@ The task must have been created with <a class="autorefs autorefs-internal" title
     <div class="doc doc-contents ">
 
 
-        <p>An <a href="https://docs.python.org/3/reference/datamodel.html#async-context-managers">asynchronous context manager</a> holding a group of tasks. Tasks can be added to the group using <a class="autorefs autorefs-internal" title="create_task(coro, *, name=None, background=False)" href="#anyioutils.TaskGroup.create_task">create_task()</a>. All tasks are awaited when the context manager exits.</p>
+        <p>An <a href="https://docs.python.org/3/reference/datamodel.html#async-context-managers">asynchronous context manager</a> holding a group of tasks. Tasks can be added to the group using <a class="autorefs autorefs-internal" title="create_task(coro, *, name=None, background=False)" href="#anyioutils.TaskGroup.create_task">create_task()</a>. All tasks are awaited when the context manager exits, unless they have been created with <code>background=True</code>.</p>
 <p>Tasks created down the call stack using <a class="autorefs autorefs-internal" title="create_task(coro, task_group=None, *, name=None, exception_handler=None)" href="#anyioutils.create_task">create_task()</a> or <a class="autorefs autorefs-internal" title="start_task(async_fn, task_group=None, *, name=None, exception_handler=None)" href="#anyioutils.start_task">start_task()</a> may not need to be passed a TaskGroup, since they could use this TaskGroup implicitly.</p>
 
 
