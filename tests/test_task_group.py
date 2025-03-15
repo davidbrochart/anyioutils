@@ -1,6 +1,6 @@
 import pytest
 
-from anyio import get_cancelled_exc_class, sleep
+from anyio import fail_after, get_cancelled_exc_class, sleep, wait_all_tasks_blocked
 from anyioutils import TaskGroup, create_task, wait
 
 pytestmark = pytest.mark.anyio
@@ -36,3 +36,13 @@ async def test_task_group_cancel():
 
     with pytest.raises(get_cancelled_exc_class()):
         await task0.wait()
+
+
+async def test_task_group_background_task():
+    async def coro():
+        await sleep(float("inf"))
+
+    with fail_after(1):
+        async with TaskGroup() as tg:
+            task0 = tg.create_task(coro(), background=True)
+            await wait_all_tasks_blocked()
