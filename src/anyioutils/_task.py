@@ -6,7 +6,7 @@ from collections.abc import Awaitable, Coroutine
 from contextvars import ContextVar
 from typing import Any, Callable, Generic, TypeVar
 
-from anyio import Event, create_task_group
+from anyio import Event, TaskInfo, create_task_group, get_current_task
 from anyio.abc import TaskGroup
 
 from ._exceptions import CancelledError, InvalidStateError
@@ -64,6 +64,14 @@ class Task(Generic[T]):
         self._waiting = False
         self._started_value = Queue[Any]()
 
+    @property
+    def task_info(self) -> TaskInfo:
+        """
+        Return:
+            The representation of the task.
+        """
+        return self._task_info
+
     def _call_callbacks(self) -> None:
         exceptions = []
         for callback in self._done_callbacks:
@@ -78,6 +86,7 @@ class Task(Generic[T]):
         raise BaseExceptionGroup("Error while calling callbacks", exceptions)
 
     async def _wait_result(self, task_group: TaskGroup) -> None:
+        self._task_info = get_current_task()
         try:
             self._coro_started = True
             self._result = await self._coro

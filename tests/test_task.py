@@ -2,7 +2,7 @@ from sys import version_info
 
 import pytest
 from anyioutils import CancelledError, InvalidStateError, Task, TaskGroup, create_task, start_task
-from anyio import Event, TASK_STATUS_IGNORED, create_task_group, sleep
+from anyio import Event, TASK_STATUS_IGNORED, create_task_group, get_current_task, sleep
 from anyio.abc import TaskStatus
 
 if version_info < (3, 11):
@@ -242,3 +242,16 @@ async def test_start_task():
         task = start_task(foo)
         assert await task.wait_started() == 1
         assert await task.wait() is None
+
+
+async def test_task_info():
+    task_info = None
+
+    async def foo():
+        nonlocal task_info
+        task_info = get_current_task()
+
+    async with TaskGroup() as tg:
+        task = tg.create_task(foo())
+
+    assert task_info.id == task.task_info.id
