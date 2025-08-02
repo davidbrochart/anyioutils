@@ -24,7 +24,7 @@ dependencies = [
 ]
 requires-python = ">=3.9"
 
-[project.optional-dependencies]
+[dependency-groups]
 test = [
   "coverage",
   "mypy",
