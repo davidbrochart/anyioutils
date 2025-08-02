@@ -1,5 +1,10 @@
 # Version history
 
+## 0.7.4
+
+- Add `ResourceLock`.
+- Add `Task.task_info` property.
+
 ## 0.7.3
 
 - Add `TaskGroup.create_task(coro, background=True)` to run a task in the background and cancel it when the task group exits.
