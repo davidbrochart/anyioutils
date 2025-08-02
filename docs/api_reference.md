@@ -11,6 +11,7 @@
       - InvalidStateError
       - Monitor
       - Queue
+      - ResourceLock
       - Task
       - TaskGroup
       - create_task
